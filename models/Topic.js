@@ -1,6 +1,5 @@
 const { DataTypes } = require('sequelize');
-const db = require('../db/config');
-const TypeOfMeeting = require('./TypeOfMeeting');
+const { db } = require('../db/config');
 
 const Topic = db.define(
 	'topic',

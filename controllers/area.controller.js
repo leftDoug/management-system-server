@@ -95,6 +95,12 @@ const getByIdArea = async (req = request, res = response) => {
 	}
 };
 
+// const getAllWorkers=async(req=request,res=response)=>{
+// 	const id=req.params.id
+
+// 	const wa=await
+// }
+
 module.exports = {
 	createArea,
 	updateArea,

@@ -1,11 +1,24 @@
 const { request, response } = require('express');
 const Worker = require('../models/Worker');
+const Area = require('../models/Area');
 
-const createWorker = async (req = request, res = response) => {
-	const { name, occupation, email, secretary, idArea } = req.body;
+const create = async (req = request, res = response) => {
+	const { name, occupation, email, secretary, idAreas } = req.body;
 
 	try {
-		await Worker.create({ name, occupation, email, secretary, idArea });
+		const dbWorker = await Worker.create({
+			name,
+			occupation,
+			email,
+			secretary,
+		});
+
+		for (let index = 0; index < idAreas.length; index++) {
+			const id = idAreas[index];
+			const dbArea = await Area.findByPk(id);
+
+			dbWorker.addArea(dbArea);
+		}
 
 		return res.status(201).json({
 			ok: true,
@@ -21,14 +34,27 @@ const createWorker = async (req = request, res = response) => {
 	}
 };
 
-const updateWorker = async (req = request, res = response) => {
-	const { id, name, occupation, email, secretary, idArea } = req.body;
-
+const update = async (req = request, res = response) => {
+	const id = req.params.id;
+	const { name, occupation, email, secretary, idAreas } = req.body;
+	debugger;
 	try {
-		await Area.update(
-			{ name, occupation, email, secretary, idArea },
+		await Worker.update(
+			{ name, occupation, email, secretary },
 			{ where: { id } }
 		);
+
+		const dbWorker = await Worker.findByPk(id);
+		let dbAreas = [];
+
+		for (let index = 0; index < idAreas.length; index++) {
+			const element = idAreas[index];
+			const dbArea = await Area.findByPk(element);
+
+			dbAreas.push(dbArea);
+		}
+
+		dbWorker.setAreas(dbAreas);
 
 		return res.json({
 			ok: true,
@@ -44,7 +70,7 @@ const updateWorker = async (req = request, res = response) => {
 	}
 };
 
-const getAllWorkers = async (req = request, res = response) => {
+const getAll = async (req = request, res = response) => {
 	try {
 		const dbWorkers = await Worker.findAll();
 
@@ -62,7 +88,30 @@ const getAllWorkers = async (req = request, res = response) => {
 	}
 };
 
-const getByIdWorker = async (req = request, res = response) => {
+const getAreas = async (req = request, res = response) => {
+	const id = req.params.id;
+
+	try {
+		const dbWorker = await Worker.findByPk(id);
+		const dbAreas = await dbWorker.getAreas({
+			joinTableAttributes: [],
+		});
+
+		return res.json({
+			ok: true,
+			arg: dbAreas,
+		});
+	} catch (error) {
+		console.error(error);
+
+		return res.status(500).json({
+			ok: false,
+			msg: 'Error al listar areas',
+		});
+	}
+};
+
+const getById = async (req = request, res = response) => {
 	const id = req.params.id;
 
 	try {
@@ -90,8 +139,9 @@ const getByIdWorker = async (req = request, res = response) => {
 };
 
 module.exports = {
-	createWorker,
-	updateWorker,
-	getAllWorkers,
-	getByIdWorker,
+	create,
+	update,
+	getAll,
+	getById,
+	getAreas,
 };

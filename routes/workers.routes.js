@@ -1,19 +1,22 @@
 const { Router } = require('express');
 const {
-	getAllWorkers,
-	getByIdWorker,
-	createWorker,
-	updateWorker,
+	getAll,
+	getById,
+	create,
+	update,
+	getAreas,
 } = require('../controllers/worker.controller');
 
 const router = Router();
 
-router.get('/', getAllWorkers);
+router.get('/', getAll);
 
-router.get('/:id', getByIdWorker);
+router.post('/', create);
 
-router.post('/', createWorker);
+router.get('/:id', getById);
 
-router.put('/:id', updateWorker);
+router.put('/:id', update);
+
+router.get('/:id/areas', getAreas);
 
 module.exports = router;

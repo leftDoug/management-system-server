@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const db = require('../db/config');
+const { db } = require('../db/config');
 
 const Role = db.define(
 	'role',
@@ -21,23 +21,5 @@ const Role = db.define(
 		timestamps: false,
 	}
 );
-
-// Area.belongsToMany(Worker, {
-// 	through: 'workers_areas',
-// });
-
-// Worker.belongsToMany(Area, {
-// 	through: 'workers_areas',
-// });
-
-// Area.hasMany(TypeOfMeeting, {
-// 	foreignKey: 'idArea',
-// 	sourceKey: 'id',
-// });
-
-// TypeOfMeeting.belongsTo(Area, {
-// 	foreignKey: 'idArea',
-// 	targetKey: 'id',
-// });
 
 module.exports = Role;
