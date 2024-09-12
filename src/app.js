@@ -8,6 +8,7 @@ import authRoutes from './routes/auth.routes.js';
 import workersRoutes from './routes/workers.routes.js';
 import typesOfMeetingsRoutes from './routes/types-of-meetings.routes.js';
 import rolesRoutes from './routes/roles.routes.js';
+import agendasRoutes from './routes/agendas.routes.js';
 
 // create express application/server
 const app = express();
@@ -47,5 +48,6 @@ app.use('/api/areas', areasRoutes);
 app.use('/api/workers', workersRoutes);
 app.use('/api/types-of-meetings', typesOfMeetingsRoutes);
 app.use('/api/roles', rolesRoutes);
+app.use('/api/agendas', agendasRoutes);
 
 export default app;

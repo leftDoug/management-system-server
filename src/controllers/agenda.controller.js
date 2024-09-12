@@ -36,7 +36,7 @@ export const update = async (req = request, res = response) => {
 	const { year } = req.body;
 
 	try {
-		const dbAgenda = await Agenda.findOne({ where: { year, idTypeOfMeeting } });
+		const dbAgenda = await Agenda.findOne({ where: { year, id } });
 
 		if (dbAgenda) {
 			return res.status(400).json({
