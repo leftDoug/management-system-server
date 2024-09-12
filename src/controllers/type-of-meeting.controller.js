@@ -18,7 +18,7 @@ export const create = async (req = request, res = response) => {
 				if (element.idArea === idArea) {
 					return res.status(400).json({
 						ok: false,
-						mesg: 'Este tipo de reunion con la misma frecuencia ya existe para el area seleccionada',
+						msg: 'Este tipo de reunion con la misma frecuencia ya existe para el area seleccionada',
 					});
 				}
 			}
@@ -54,7 +54,7 @@ export const update = async (req = request, res = response) => {
 				if (element.idArea === idArea) {
 					return res.status(400).json({
 						ok: false,
-						mesg: 'Este tipo de reunion con la misma frecuencia ya existe para el area seleccionada',
+						msg: 'Este tipo de reunion con la misma frecuencia ya existe para el area seleccionada',
 					});
 				}
 			}

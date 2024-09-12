@@ -18,24 +18,26 @@ export const Agreement = sequelize.define(
 		},
 		number: {
 			type: DataTypes.INTEGER,
+			autoIncrement: true,
 			allowNull: false,
 		},
 		content: {
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		compilance_date: {
-			type: DataTypes.DATEONLY,
+		compilanceDate: {
+			type: DataTypes.DATE,
 			allowNull: false,
 		},
 		completed: {
 			type: DataTypes.BOOLEAN,
+			defaultValue: false,
 			allowNull: false,
 		},
 		state: {
 			type: DataTypes.BOOLEAN,
-			allowNull: false,
 			defaultValue: true,
+			allowNull: false,
 		},
 	},
 	{

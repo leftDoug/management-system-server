@@ -11,7 +11,7 @@ export const create = async (req = request, res = response) => {
 		if (dbAgenda) {
 			return res.status(400).json({
 				ok: false,
-				mesg: 'Ya existe una agenda creada para este tipo de reunión este año',
+				msg: 'Ya existe una agenda creada para este tipo de reunión este año',
 			});
 		}
 
@@ -41,7 +41,7 @@ export const update = async (req = request, res = response) => {
 		if (dbAgenda) {
 			return res.status(400).json({
 				ok: false,
-				mesg: 'Ya existe una agenda creada para este tipo de reunión este año',
+				msg: 'Ya existe una agenda creada para este tipo de reunión este año',
 			});
 		}
 

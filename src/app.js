@@ -9,6 +9,10 @@ import workersRoutes from './routes/workers.routes.js';
 import typesOfMeetingsRoutes from './routes/types-of-meetings.routes.js';
 import rolesRoutes from './routes/roles.routes.js';
 import agendasRoutes from './routes/agendas.routes.js';
+import meetingsRoutes from './routes/meetings.routes.js';
+import responsesRoutes from './routes/responses.routes.js';
+import agreementsRoutes from './routes/agreements.routes.js';
+import topicsRoutes from './routes/topics.routes.js';
 
 // create express application/server
 const app = express();
@@ -49,5 +53,9 @@ app.use('/api/workers', workersRoutes);
 app.use('/api/types-of-meetings', typesOfMeetingsRoutes);
 app.use('/api/roles', rolesRoutes);
 app.use('/api/agendas', agendasRoutes);
+app.use('/api/meetings', meetingsRoutes);
+app.use('/api/responses', responsesRoutes);
+app.use('/api/agreements', agreementsRoutes);
+app.use('/api/topics', topicsRoutes);
 
 export default app;

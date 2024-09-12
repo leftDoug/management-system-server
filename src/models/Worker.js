@@ -53,15 +53,15 @@ User.belongsTo(Worker, {
 	targetKey: 'id',
 });
 
-Worker.hasMany(Meeting, {
-	foreignKey: 'idResponsible',
-	sourceKey: 'id',
-});
+// Worker.hasMany(Meeting, {
+// 	foreignKey: 'idResponsible',
+// 	sourceKey: 'id',
+// });
 
-Meeting.belongsTo(Worker, {
-	foreignKey: 'idResponsible',
-	targetKey: 'id',
-});
+// Meeting.belongsTo(Worker, {
+// 	foreignKey: 'idResponsible',
+// 	targetKey: 'id',
+// });
 
 Worker.hasMany(Meeting, {
 	foreignKey: 'idSecretary',

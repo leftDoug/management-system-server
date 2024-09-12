@@ -11,8 +11,7 @@ import dotenv from 'dotenv';
 
 import { sequelize } from './db/config.js';
 import app from './app.js';
-import { Role } from './models/Role.js';
-import { User } from './models/User.js';
+import { Agreement } from './models/Agreement.js';
 
 dotenv.config();
 
