@@ -72,7 +72,7 @@ async function main() {
 
 		console.log('Connection has been established successfully');
 
-		app.listen(process.env.PORT, () => {
+		app.listen(process.env.PORT, '0.0.0.0', () => {
 			console.log(`Server is listening on port ${process.env.PORT}`);
 		});
 	} catch (error) {

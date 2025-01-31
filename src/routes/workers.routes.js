@@ -11,10 +11,13 @@ import { Router } from 'express';
 
 import {
 	getAll,
+	getAgreements,
 	getAreas,
 	getById,
 	create,
 	update,
+	removeArea,
+	addArea,
 } from '../controllers/worker.controller.js';
 
 const router = Router();
@@ -24,6 +27,9 @@ router.post('/', create);
 router.get('/:id', getById);
 router.put('/:id', update);
 router.get('/:id/areas', getAreas);
+router.post('/:id/areas', addArea);
+router.delete('/:id/areas/:idArea', removeArea);
+router.get('/:id/agreements', getAgreements);
 
 export default router;
 

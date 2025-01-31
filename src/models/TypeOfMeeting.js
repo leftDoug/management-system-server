@@ -10,7 +10,7 @@ import { Agenda } from './Agenda.js';
 import { Meeting } from './Meeting.js';
 
 export const TypeOfMeeting = sequelize.define(
-	'types_of_meeting',
+	'types_of_meetings',
 	{
 		id: {
 			type: DataTypes.UUID,
@@ -38,22 +38,22 @@ export const TypeOfMeeting = sequelize.define(
 );
 
 TypeOfMeeting.hasOne(Agenda, {
-	foreignKey: 'idTypeOfMeeting',
+	foreignKey: 'type_of_meeting_id',
 	sourceKey: 'id',
 });
 
 Agenda.belongsTo(TypeOfMeeting, {
-	foreignKey: 'idTypeOfMeeting',
+	foreignKey: 'type_of_meeting_id',
 	targetKey: 'id',
 });
 
 TypeOfMeeting.hasMany(Meeting, {
-	foreignKey: 'idTypeOfMeeting',
+	foreignKey: 'type_of_meeting_id',
 	sourceKey: 'id',
 });
 
 Meeting.belongsTo(TypeOfMeeting, {
-	foreignKey: 'idTypeOfMeeting',
+	foreignKey: 'type_of_meeting_id',
 	targetKey: 'id',
 });
 

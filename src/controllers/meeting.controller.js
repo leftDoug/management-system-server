@@ -2,6 +2,7 @@ import { request, response } from 'express';
 
 import { Meeting } from '../models/Meeting.js';
 import { TypeOfMeeting } from '../models/TypeOfMeeting.js';
+import { Agreement } from '../models/Agreement.js';
 
 export const create = async (req = request, res = response) => {
 	const {
@@ -18,9 +19,9 @@ export const create = async (req = request, res = response) => {
 		const dbMeetings = await Meeting.findAll({ where: { date } });
 		const dbToM = await TypeOfMeeting.findByPk(idTypeOfMeeting);
 
-		if (dbMeeting.length > 0) {
+		if (dbMeetings.length > 0) {
 			for (let index = 0; index < dbMeetings.length; index++) {
-				const element = dbMeeting[index];
+				const element = dbMeetings[index];
 				const eStart = new Date(element.startTime);
 				const eEnd = new Date(element.endTime);
 				const ngStart = new Date(startTime);
@@ -213,6 +214,26 @@ export const getById = async (req = request, res = response) => {
 		return res.status(500).json({
 			ok: false,
 			msg: 'Error al buscar la Reunión',
+		});
+	}
+};
+
+export const getAgreements = async (req = request, res = response) => {
+	const { id } = req.params;
+
+	try {
+		const dbAgreements = await Agreement.findAll({ where: { idMeeting: id } });
+
+		res.json({
+			ok: true,
+			arg: dbAgreements,
+		});
+	} catch (error) {
+		console.error(error);
+
+		res.status(500).json({
+			ok: false,
+			msg: 'Error al obtener los acuerdos',
 		});
 	}
 };

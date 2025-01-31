@@ -44,12 +44,12 @@ export const Worker = sequelize.define(
 );
 
 Worker.hasOne(User, {
-	foreignKey: 'idWorker',
+	foreignKey: 'worker_id',
 	sourceKey: 'id',
 });
 
 User.belongsTo(Worker, {
-	foreignKey: 'idWorker',
+	foreignKey: 'worker_id',
 	targetKey: 'id',
 });
 
@@ -64,23 +64,23 @@ User.belongsTo(Worker, {
 // });
 
 Worker.hasMany(Meeting, {
-	foreignKey: 'idSecretary',
+	foreignKey: 'secretary_id',
 	sourceKey: 'id',
 });
 
 Meeting.belongsTo(Worker, {
-	foreignKey: 'idSecretary',
+	foreignKey: 'secretary_id',
 	targetKey: 'id',
 });
 
 Worker.hasMany(Agreement, {
-	foreignKey: 'idResponsible',
+	foreignKey: 'responsible_id',
 	sourceKey: 'id',
 });
 
 Agreement.belongsTo(Worker, {
-	foreignKey: 'idResponsible',
-	targetKey: 'id',
+	foreignKey: 'responsible_id',
+	targetId: 'id',
 });
 
 // module.exports = Worker;

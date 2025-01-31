@@ -4,6 +4,9 @@
 import { request, response } from 'express';
 
 import { TypeOfMeeting } from '../models/TypeOfMeeting.js';
+import { Meeting } from '../models/Meeting.js';
+import { sequelize } from '../db/config.js';
+import { QueryTypes } from 'sequelize';
 
 export const create = async (req = request, res = response) => {
 	const { name, frequency, idArea } = req.body;
@@ -78,7 +81,12 @@ export const update = async (req = request, res = response) => {
 
 export const getAll = async (req = request, res = response) => {
 	try {
-		const dbTypesOfMeetings = await TypeOfMeeting.findAll();
+		const dbTypesOfMeetings = await sequelize.query(
+			`SELECT * FROM view_types_of_meetings`,
+			{
+				type: QueryTypes.SELECT,
+			}
+		);
 
 		return res.json({
 			ok: true,
@@ -117,6 +125,28 @@ export const getById = async (req = request, res = response) => {
 		return res.status(500).json({
 			ok: false,
 			msg: 'Error al buscar el Tipo de Reunión',
+		});
+	}
+};
+
+export const getMeetings = async (req = request, res = response) => {
+	const { id } = req.params;
+
+	try {
+		const dbMeetings = await Meeting.findAll({
+			where: { idTypeOfMeeting: id },
+		});
+
+		res.json({
+			ok: true,
+			arg: dbMeetings,
+		});
+	} catch (error) {
+		console.error(error);
+
+		res.status(500).json({
+			ok: false,
+			msg: 'Error al obtener las reuniones',
 		});
 	}
 };

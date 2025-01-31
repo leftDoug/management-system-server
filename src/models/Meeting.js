@@ -28,11 +28,11 @@ export const Meeting = sequelize.define(
 			type: DataTypes.DATE,
 			allowNull: false,
 		},
-		startTime: {
+		start_time: {
 			type: DataTypes.DATE,
 			allowNull: false,
 		},
-		endTime: {
+		end_time: {
 			type: DataTypes.DATE,
 			allowNull: false,
 		},
@@ -48,12 +48,12 @@ export const Meeting = sequelize.define(
 );
 
 Meeting.hasMany(Agreement, {
-	foreignKey: 'idMeeting',
+	foreignKey: 'meeting_id',
 	sourceKey: 'id',
 });
 
 Agreement.belongsTo(Meeting, {
-	foreignKey: 'idMeeting',
+	foreignKey: 'meeting_id',
 	targetKey: 'id',
 });
 

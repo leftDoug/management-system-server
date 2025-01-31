@@ -8,6 +8,7 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../db/config.js';
 import { Worker } from './Worker.js';
 import { TypeOfMeeting } from './TypeOfMeeting.js';
+import { WorkerArea } from './WorkerArea.js';
 
 export const Area = sequelize.define(
 	'area',
@@ -35,20 +36,24 @@ export const Area = sequelize.define(
 );
 
 Area.belongsToMany(Worker, {
-	through: 'workers_areas',
+	through: WorkerArea,
+	foreignKey: 'area_id',
+	otherKey: 'worker_id',
 });
 
 Worker.belongsToMany(Area, {
-	through: 'workers_areas',
+	through: WorkerArea,
+	foreignKey: 'worker_id',
+	otherKey: 'area_id',
 });
 
 Area.hasMany(TypeOfMeeting, {
-	foreignKey: 'idArea',
+	foreignKey: 'area_id',
 	sourceKey: 'id',
 });
 
 TypeOfMeeting.belongsTo(Area, {
-	foreignKey: 'idArea',
+	foreignKey: 'area_id',
 	targetKey: 'id',
 });
 

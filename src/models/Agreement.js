@@ -25,7 +25,7 @@ export const Agreement = sequelize.define(
 			type: DataTypes.STRING,
 			allowNull: false,
 		},
-		compilanceDate: {
+		compilance_date: {
 			type: DataTypes.DATE,
 			allowNull: false,
 		},
@@ -46,12 +46,12 @@ export const Agreement = sequelize.define(
 );
 
 Agreement.hasMany(Response, {
-	foreignKey: 'idAgreement',
+	foreignKey: 'agreement_id',
 	targetKey: 'id',
 });
 
 Response.belongsTo(Agreement, {
-	foreignKey: 'idAgreement',
+	foreignKey: 'agreement_id',
 	sourceKey: 'id',
 });
 

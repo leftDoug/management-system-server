@@ -28,10 +28,6 @@ export const User = sequelize.define(
 				isAlphanumeric: {
 					msg: 'El usuario solo puede contener letras y numeros',
 				},
-				len: {
-					args: [5, 8],
-					msg: 'El usuario debe tener entre 5 y 8 caracteres',
-				},
 			},
 		},
 		password: {

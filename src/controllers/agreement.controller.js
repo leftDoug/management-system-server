@@ -1,13 +1,15 @@
 import { request, response } from 'express';
 
 import { Agreement } from '../models/Agreement.js';
+import { sequelize } from '../db/config.js';
+import { QueryTypes } from 'sequelize';
 
 export const create = async (req = request, res = response) => {
-	const { content, compilanceDate, idMeeting, idResponsible } = req.body;
+	const { content, compilance_date, meeting_id, responsible_id } = req.body;
 	debugger;
 	try {
 		const dbAgreement = await Agreement.findOne({
-			where: { content, idMeeting },
+			where: { content, meeting_id },
 		});
 
 		if (dbAgreement) {
@@ -17,13 +19,13 @@ export const create = async (req = request, res = response) => {
 			});
 		}
 
-		const date = new Date(compilanceDate);
+		const date = new Date(compilance_date);
 
 		await Agreement.create({
 			content,
-			compilanceDate: date,
-			idMeeting,
-			idResponsible,
+			compilance_date: date,
+			idMeeting: meeting_id,
+			idResponsible: responsible_id,
 		});
 
 		res.status(201).json({
@@ -42,11 +44,11 @@ export const create = async (req = request, res = response) => {
 
 export const update = async (req = request, res = response) => {
 	const id = req.params.id;
-	const { compilanceDate, completed, state } = req.body;
+	const { compilance_date, completed, state } = req.body;
 
 	try {
 		await Agreement.update(
-			{ compilanceDate, completed, state },
+			{ compilance_date, completed, state },
 			{ where: { id } }
 		);
 
@@ -66,7 +68,12 @@ export const update = async (req = request, res = response) => {
 
 export const getAll = async (req = request, res = response) => {
 	try {
-		const dbAgreements = await Agreement.findAll();
+		const dbAgreements = await sequelize.query(
+			`select * from view_agreements`,
+			{
+				type: QueryTypes.SELECT,
+			}
+		);
 
 		return res.json({
 			ok: true,
@@ -87,6 +94,49 @@ export const getById = async (req = request, res = response) => {
 
 	try {
 		const dbAgreement = await Agreement.findByPk(id);
+		// const dbAgreement = await sequelize.query(
+		// 	`select fn_agreement_getinfo('${id}')`,
+		// 	{
+		// 		type: QueryTypes.SELECT,
+		// 	}
+		// );
+
+		if (!dbAgreement) {
+			return res.status(404).json({
+				ok: false,
+				msg: 'Acuerdo no encontrado',
+			});
+		}
+
+		return res.json({
+			ok: true,
+			arg: dbAgreement,
+		});
+	} catch (err) {
+		console.error(err);
+
+		return res.status(500).json({
+			ok: false,
+			msg: 'Error al buscar el acuerdo',
+		});
+	}
+};
+
+export const getInfo = async (req = request, res = response) => {
+	const { id } = req.params;
+
+	try {
+		const result = await sequelize.query(
+			`
+			SELECT fn_agreement_getinfo('${id}', 'agreement');
+			FETCH ALL IN agreement;
+			`,
+			{
+				type: QueryTypes.SELECT,
+			}
+		);
+
+		const dbAgreement = result[1];
 
 		if (!dbAgreement) {
 			return res.status(404).json({

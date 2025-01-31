@@ -28,12 +28,12 @@ export const Role = sequelize.define(
 );
 
 Role.hasOne(User, {
-	foreignKey: 'idRole',
+	foreignKey: 'role_id',
 	sourceKey: 'id',
 });
 
 User.belongsTo(Role, {
-	foreignKey: 'idRole',
+	foreignKey: 'role_id',
 	targetKey: 'id',
 });
 

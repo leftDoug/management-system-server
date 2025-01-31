@@ -11,6 +11,8 @@ import { Router } from 'express';
 import {
 	getAll,
 	getById,
+	getToM,
+	getWorkers,
 	create,
 	update,
 } from '../controllers/area.controller.js';
@@ -18,8 +20,10 @@ import {
 const router = Router();
 
 router.get('/', getAll);
-router.get('/:id', getById);
 router.post('/', create);
+router.get('/:id', getById);
+router.get('/:id/types-of-meetings', getToM);
+router.get('/:id/workers', getWorkers);
 router.put('/:id', update);
 
 export default router;

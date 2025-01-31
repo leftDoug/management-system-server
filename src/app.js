@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { request, response } from 'express';
 import cors from 'cors';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -18,27 +18,33 @@ import topicsRoutes from './routes/topics.routes.js';
 const app = express();
 
 // CORS
-app.use(cors());
+app.use(
+  cors({
+    origin: ['http://192.168.43.215:4200', 'http://localhost:4200'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true
+  })
+);
 
 // boby lecture and parsing
 app.use(express.json());
 
 // OpenAPI definition fof swagger
 const options = {
-	definition: {
-		openapi: '3.0.0',
-		info: {
-			title: 'FevexMeet API',
-			version: '1.0.0',
-		},
-		servers: [
-			{
-				url: `http://localhost:${process.env.PORT}`,
-				description: 'FevexMeet API Server',
-			},
-		],
-	},
-	apis: ['./routes/*.js'],
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'FevexMeet API',
+      version: '1.0.0'
+    },
+    servers: [
+      {
+        url: `http://localhost:${process.env.PORT}`,
+        description: 'FevexMeet API Server'
+      }
+    ]
+  },
+  apis: ['./routes/*.js']
 };
 
 // swagger setup

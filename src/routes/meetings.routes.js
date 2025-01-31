@@ -2,6 +2,7 @@ import { Router } from 'express';
 
 import {
 	getAll,
+	getAgreements,
 	getById,
 	create,
 	update,
@@ -10,8 +11,9 @@ import {
 const router = Router();
 
 router.get('/', getAll);
-router.get('/:id', getById);
 router.post('/', create);
+router.get('/:id/agreements', getAgreements);
+router.get('/:id', getById);
 router.put('/:id', update);
 
 export default router;

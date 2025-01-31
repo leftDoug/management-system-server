@@ -32,12 +32,12 @@ export const Agenda = sequelize.define(
 );
 
 Agenda.hasMany(Topic, {
-	foreignKey: 'idAgenda',
+	foreignKey: 'agenda_id',
 	sourceKey: 'id',
 });
 
 Topic.belongsTo(Agenda, {
-	foreignKey: 'idAgenda',
+	foreignKey: 'agenda_id',
 	targetKey: 'id',
 });
 

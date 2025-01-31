@@ -14,7 +14,9 @@ import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validate-fields.js';
 import { validateJWT } from '../middlewares/validate-jwt.js';
 import {
+	getAllUsers,
 	getRole,
+	getRoles,
 	login,
 	register,
 	tokenRenewal,
@@ -25,7 +27,7 @@ const router = Router();
 
 // register user
 router.post(
-	'/registrarse',
+	'/register',
 	[
 		check('username', 'El usuario es obligatorio.').not().isEmpty(),
 		check('username', 'El usuario debe tener al menos 5 caracteres.').isLength({
@@ -53,7 +55,11 @@ router.post(
 );
 
 // renew token
-router.get('/renovar', validateJWT, tokenRenewal);
+router.get('/renew', validateJWT, tokenRenewal);
+
+router.get('/users', getAllUsers);
+
+router.get('/roles', getRoles);
 
 router.put('/users/:id', update);
 

@@ -11,6 +11,7 @@ import { Router } from 'express';
 import {
 	getAll,
 	getById,
+	getMeetings,
 	create,
 	update,
 } from '../controllers/type-of-meeting.controller.js';
@@ -18,8 +19,9 @@ import {
 const router = Router();
 
 router.get('/', getAll);
-router.get('/:id', getById);
 router.post('/', create);
+router.get('/:id', getById);
+router.get('/:id/meetings', getMeetings);
 router.put('/:id', update);
 
 export default router;
