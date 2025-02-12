@@ -20,7 +20,7 @@ const app = express();
 // CORS
 app.use(
   cors({
-    origin: ['http://192.168.43.215:4200', 'http://localhost:4200'],
+    origin: ['http://localhost:4200'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
   })

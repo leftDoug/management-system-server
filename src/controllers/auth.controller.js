@@ -65,24 +65,24 @@ export const register = async (req = request, res = response) => {
     if (user) {
       return res.status(400).json({
         ok: false,
-        msg: 'Este nombre de usuario ya existe'
+        msg: 'Este nombre de usuario ya existe.'
       });
     }
 
-    user = await User.findOne({ where: { worker_id: idWorker } });
+    user = await User.findOne({ where: { idWorker } });
 
     if (user) {
       return res.status(400).json({
         ok: false,
-        msg: 'Este trabajador ya tiene un usuario creado'
+        msg: 'Este trabajador ya tiene un usuario creado.'
       });
     }
 
     user = await User.create({
       username,
       password,
-      worker_id: idWorker,
-      role_id: idRole
+      idWorker,
+      idRole
     });
 
     // hash password
@@ -96,7 +96,7 @@ export const register = async (req = request, res = response) => {
 
     return res.status(201).json({
       ok: true,
-      msg: 'Usuario creado',
+      msg: 'Usuario creado.',
       token
     });
   } catch (err) {
@@ -104,7 +104,7 @@ export const register = async (req = request, res = response) => {
 
     return res.status(500).json({
       ok: false,
-      msg: 'Error al crear el usuario'
+      msg: 'Error al crear el usuario.'
     });
   }
 };

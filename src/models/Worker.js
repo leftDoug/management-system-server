@@ -1,86 +1,92 @@
-// const { DataTypes } = require('sequelize');
-// const { db } = require('../src/controllers/db/config');
-// const User = require('./User');
-// const Meeting = require('./Meeting');
-// const Agreement = require('./Agreement');
-
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
-import { User } from './User.js';
-import { Meeting } from './Meeting.js';
 import { Agreement } from './Agreement.js';
+import { Meeting } from './Meeting.js';
+import { User } from './User.js';
+import { MeetingAttendance } from './MeetingAttendance.js';
+import { WorkerMeeting } from './WorkerMeeting.js';
 
 export const Worker = sequelize.define(
-	'worker',
-	{
-		id: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV1,
-			allowNull: false,
-			primaryKey: true,
-		},
-		name: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		occupation: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		email: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		state: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
-			defaultValue: true,
-		},
-	},
-	{
-		timestamps: false,
-	}
+  'worker',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    occupation: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
+    state: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    }
+  },
+  {
+    timestamps: false
+  }
 );
 
 Worker.hasOne(User, {
-	foreignKey: 'worker_id',
-	sourceKey: 'id',
+  foreignKey: 'idUser',
+  sourceKey: 'id'
 });
 
 User.belongsTo(Worker, {
-	foreignKey: 'worker_id',
-	targetKey: 'id',
+  foreignKey: 'idUser',
+  targetKey: 'id'
 });
 
 // Worker.hasMany(Meeting, {
-// 	foreignKey: 'idResponsible',
-// 	sourceKey: 'id',
+//   foreignKey: 'idSecretary',
+//   allowNull: false
 // });
 
 // Meeting.belongsTo(Worker, {
-// 	foreignKey: 'idResponsible',
-// 	targetKey: 'id',
+//   foreignKey: 'idSecretary',
+//   allowNull: false
 // });
 
-Worker.hasMany(Meeting, {
-	foreignKey: 'secretary_id',
-	sourceKey: 'id',
-});
+// Worker.belongsToMany(Meeting, {
+//   through: WorkerMeeting,
+//   foreignKey: 'idWorker',
+//   allowNull: false
+// });
 
-Meeting.belongsTo(Worker, {
-	foreignKey: 'secretary_id',
-	targetKey: 'id',
-});
+// Meeting.belongsToMany(Worker, {
+//   through: WorkerMeeting,
+//   foreignKey: 'idMeeting',
+//   allowNull: false
+// });
+
+// Worker.belongsToMany(Meeting, {
+//   through: MeetingAttendance,
+//   foreignKey: 'idWorker'
+// });
+
+// Meeting.belongsToMany(Worker, {
+//   through: MeetingAttendance,
+//   foreignKey: 'idMeeting'
+// });
 
 Worker.hasMany(Agreement, {
-	foreignKey: 'responsible_id',
-	sourceKey: 'id',
+  foreignKey: 'idResponsible',
+  sourceKey: 'id'
 });
 
 Agreement.belongsTo(Worker, {
-	foreignKey: 'responsible_id',
-	targetId: 'id',
+  foreignKey: 'idResponsible',
+  targetId: 'id'
 });
-
-// module.exports = Worker;

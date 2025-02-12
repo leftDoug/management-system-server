@@ -7,34 +7,32 @@ import { sequelize } from '../db/config.js';
 import { User } from './User.js';
 
 export const Role = sequelize.define(
-	'role',
-	{
-		id: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV1,
-			allowNull: false,
-			primaryKey: true,
-		},
-		role: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: true,
-			allowNull: false,
-		},
-	},
-	{
-		timestamps: false,
-	}
+  'role',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    role: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true
+    }
+  },
+  {
+    timestamps: false
+  }
 );
 
 Role.hasOne(User, {
-	foreignKey: 'role_id',
-	sourceKey: 'id',
+  foreignKey: 'idRole',
+  sourceKey: 'id'
 });
 
 User.belongsTo(Role, {
-	foreignKey: 'role_id',
-	targetKey: 'id',
+  foreignKey: 'idRole',
+  targetKey: 'id'
 });
 
 // module.exports = Role;

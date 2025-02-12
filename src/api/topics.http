@@ -1,0 +1,28 @@
+### getAll
+GET http://localhost:4000/api/topics
+
+### getAById
+GET http://localhost:4000/api/topics/3
+
+### create
+POST http://localhost:4000/api/topics HTTP/1.1
+Content-Type: application/json
+
+{
+  "name":"Tema 1",
+  "month":"2025-05-24T19:15:05.706Z",
+  "idAgenda":1
+}
+
+### update
+PATCH  http://localhost:4000/api/topics/1 HTTP/1.1
+Content-Type: application/json
+
+{
+  "name":"Tema 1",
+  "month":"2025-05-24T19:15:05.706Z",
+  "idAgenda":1
+}
+
+### remove
+PATCH http://localhost:4000/api/topics/2/remove HTTP/1.1

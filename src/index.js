@@ -12,6 +12,15 @@ import dotenv from 'dotenv';
 import { sequelize } from './db/config.js';
 import app from './app.js';
 import { Agreement } from './models/Agreement.js';
+import { Area } from './models/Area.js';
+import { TypeOfMeeting } from './models/TypeOfMeeting.js';
+import { Agenda } from './models/Agenda.js';
+import { Topic } from './models/Topic.js';
+import { WorkerMeeting } from './models/WorkerMeeting.js';
+import { Meeting } from './models/Meeting.js';
+import { Worker } from './models/Worker.js';
+import { WorkerArea } from './models/WorkerArea.js';
+import { User } from './models/User.js';
 
 dotenv.config();
 
@@ -67,17 +76,22 @@ dotenv.config();
 // run server
 
 async function main() {
-	try {
-		await sequelize.sync({ force: false });
+  try {
+    // await sequelize.sync({ force: true });
+    // await User.sync({ alter: true });
+    // await Meeting.sync({ alter: true });
+    // await Worker.sync({ alter: true });
+    // await WorkerArea.sync({ alter: true });
+    // await WorkerMeeting.sync({ alter: true });
 
-		console.log('Connection has been established successfully');
+    console.log('Connection has been established successfully');
 
-		app.listen(process.env.PORT, '0.0.0.0', () => {
-			console.log(`Server is listening on port ${process.env.PORT}`);
-		});
-	} catch (error) {
-		console.error('Unable to connect to the database:', error);
-	}
+    app.listen(process.env.PORT, '0.0.0.0', () => {
+      console.log(`Server is listening on port ${process.env.PORT}`);
+    });
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
 }
 
 main();

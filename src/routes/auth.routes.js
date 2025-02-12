@@ -14,44 +14,44 @@ import { check } from 'express-validator';
 import { validateFields } from '../middlewares/validate-fields.js';
 import { validateJWT } from '../middlewares/validate-jwt.js';
 import {
-	getAllUsers,
-	getRole,
-	getRoles,
-	login,
-	register,
-	tokenRenewal,
-	update,
+  getAllUsers,
+  getRole,
+  getRoles,
+  login,
+  register,
+  tokenRenewal,
+  update
 } from '../controllers/auth.controller.js';
 
 const router = Router();
 
 // register user
 router.post(
-	'/register',
-	[
-		check('username', 'El usuario es obligatorio.').not().isEmpty(),
-		check('username', 'El usuario debe tener al menos 5 caracteres.').isLength({
-			min: 5,
-		}),
-		check('password', 'La contraseña es obligatoria.').not().isEmpty(),
-		check(
-			'password',
-			'La contraseña debe tener al menos 8 caracteres.'
-		).isLength({ min: 8 }),
-		validateFields,
-	],
-	register
+  '/register',
+  [
+    check('username', 'El usuario es obligatorio.').not().isEmpty(),
+    check('username', 'El usuario debe tener al menos 5 caracteres.').isLength({
+      min: 5
+    }),
+    check('password', 'La contraseña es obligatoria.').not().isEmpty(),
+    check(
+      'password',
+      'La contraseña debe tener al menos 8 caracteres.'
+    ).isLength({ min: 8 }),
+    validateFields
+  ],
+  register
 );
 
 // login
 router.post(
-	'/',
-	[
-		check('username', 'El usuario es obligatorio.').not().isEmpty(),
-		check('password', 'La contraseña es obligatoria.').not().isEmpty(),
-		validateFields,
-	],
-	login
+  '/login',
+  [
+    check('username', 'El usuario es obligatorio.').not().isEmpty(),
+    check('password', 'La contraseña es obligatoria.').not().isEmpty(),
+    validateFields
+  ],
+  login
 );
 
 // renew token

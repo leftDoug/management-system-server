@@ -10,51 +10,38 @@ import { Agenda } from './Agenda.js';
 import { Meeting } from './Meeting.js';
 
 export const TypeOfMeeting = sequelize.define(
-	'types_of_meetings',
-	{
-		id: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV1,
-			allowNull: false,
-			primaryKey: true,
-		},
-		name: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		frequency: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		state: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
-			defaultValue: true,
-		},
-	},
-	{
-		timestamps: false,
-	}
+  'types_of_meetings',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    frequency: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    state: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true
+    }
+  },
+  {
+    timestamps: false,
+    freezeTableName: true
+  }
 );
 
-TypeOfMeeting.hasOne(Agenda, {
-	foreignKey: 'type_of_meeting_id',
-	sourceKey: 'id',
-});
-
-Agenda.belongsTo(TypeOfMeeting, {
-	foreignKey: 'type_of_meeting_id',
-	targetKey: 'id',
-});
-
 TypeOfMeeting.hasMany(Meeting, {
-	foreignKey: 'type_of_meeting_id',
-	sourceKey: 'id',
+  foreignKey: 'idTypeOfMeeting',
+  allowNull: false
 });
 
 Meeting.belongsTo(TypeOfMeeting, {
-	foreignKey: 'type_of_meeting_id',
-	targetKey: 'id',
+  foreignKey: 'idTypeOfMeeting',
+  allowNull: false
 });
-
-// module.exports = TypeOfMeeting;

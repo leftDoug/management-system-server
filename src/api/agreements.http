@@ -1,0 +1,5 @@
+### getAll
+GET http://localhost:4000/api/agreements HTTP/1.1
+
+### getById
+GET http://localhost:4000/api/agreements/6b6829b0-7122-11ef-a15e-cbff233b5daa

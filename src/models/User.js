@@ -9,38 +9,53 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../db/config.js';
 
 export const User = sequelize.define(
-	'user',
-	{
-		id: {
-			type: DataTypes.UUID,
-			defaultValue: DataTypes.UUIDV1,
-			allowNull: false,
-			primaryKey: true,
-		},
-		username: {
-			type: DataTypes.STRING,
-			allowNull: false,
-			unique: true,
-			validate: {
-				notEmpty: {
-					msg: 'El usuario es requerido',
-				},
-				isAlphanumeric: {
-					msg: 'El usuario solo puede contener letras y numeros',
-				},
-			},
-		},
-		password: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		state: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
-			defaultValue: true,
-		},
-	},
-	{ timestamps: false }
+  'user',
+  {
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV1,
+      primaryKey: true
+    },
+    username: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notEmpty: {
+          msg: 'El usuario es requerido'
+        },
+        isAlphanumeric: {
+          msg: 'El usuario solo puede contener letras y numeros'
+        }
+      }
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    state: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: true
+    },
+    idRole: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'roles',
+        key: 'id'
+      }
+    },
+    idWorker: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: 'workers',
+        key: 'id'
+      }
+    }
+  },
+  { timestamps: false }
 );
 
 // module.exports = User;

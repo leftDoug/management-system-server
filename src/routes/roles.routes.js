@@ -9,13 +9,7 @@
 
 import { Router } from 'express';
 
-import {
-	getAll,
-	getById,
-	create,
-	update,
-	remove,
-} from '../controllers/role.controller.js';
+import { getAll, getById } from '../controllers/role.controller.js';
 
 const router = Router();
 
@@ -98,7 +92,7 @@ router.get('/:id', getById);
  *                   name:
  *                     type: string
  */
-router.post('/', create);
+// router.post('/', create);
 
 /**
  * @swagger
@@ -135,7 +129,7 @@ router.post('/', create);
  *                   name:
  *                     type: string
  */
-router.put('/:id', update);
+// router.put('/:id', update);
 
 /**
  * @swagger
@@ -153,7 +147,7 @@ router.put('/:id', update);
  *       204:
  *         description: Role deleted
  */
-router.delete('/:id', remove);
+// router.delete('/:id', remove);
 
 export default router;
 

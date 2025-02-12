@@ -1,20 +1,25 @@
-import { sequelize } from '../db/config.js';
 import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/config.js';
 
-export const WorkerArea = sequelize.define(
-  'workers_areas',
+export const WorkerMeeting = sequelize.define(
+  'workers_meetings',
   {
-    idArea: {
+    id: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    idMeeting: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
       references: {
-        model: 'areas',
+        model: 'meetings',
         key: 'id'
       }
     },
     idWorker: {
       type: DataTypes.INTEGER,
-      primaryKey: true,
+      allowNull: false,
       references: {
         model: 'workers',
         key: 'id'
