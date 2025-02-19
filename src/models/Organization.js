@@ -2,8 +2,8 @@ import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
 
-export const Area = sequelize.define(
-  'area',
+export const Organization = sequelize.define(
+  'organization',
   {
     id: {
       type: DataTypes.INTEGER,

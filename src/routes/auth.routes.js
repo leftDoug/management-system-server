@@ -1,70 +1,70 @@
-// const { Router } = require('express');
-// const {
-// 	registerUser,
-// 	login,
-// 	renew,
-// } = require('../controllers/auth.controller');
-// const { check } = require('express-validator');
-// const { validateFields } = require('../middlewares/validate-fields');
-// const { validateJWT } = require('../middlewares/validate-jwt');
+// // const { Router } = require('express');
+// // const {
+// // 	registerUser,
+// // 	login,
+// // 	renew,
+// // } = require('../controllers/auth.controller');
+// // const { check } = require('express-validator');
+// // const { validateFields } = require('../middlewares/validate-fields');
+// // const { validateJWT } = require('../middlewares/validate-jwt');
 
-import { Router } from 'express';
-import { check } from 'express-validator';
+// import { Router } from 'express';
+// import { check } from 'express-validator';
 
-import { validateFields } from '../middlewares/validate-fields.js';
-import { validateJWT } from '../middlewares/validate-jwt.js';
-import {
-  getAllUsers,
-  getRole,
-  getRoles,
-  login,
-  register,
-  tokenRenewal,
-  update
-} from '../controllers/auth.controller.js';
+// import { validateFields } from '../middlewares/validate-fields.js';
+// import { validateJWT } from '../middlewares/validate-jwt.js';
+// import {
+//   getAllUsers,
+//   getRole,
+//   getRoles,
+//   login,
+//   register,
+//   tokenRenewal,
+//   update
+// } from '../controllers/auth.controller.js';
 
-const router = Router();
+// const router = Router();
 
-// register user
-router.post(
-  '/register',
-  [
-    check('username', 'El usuario es obligatorio.').not().isEmpty(),
-    check('username', 'El usuario debe tener al menos 5 caracteres.').isLength({
-      min: 5
-    }),
-    check('password', 'La contraseña es obligatoria.').not().isEmpty(),
-    check(
-      'password',
-      'La contraseña debe tener al menos 8 caracteres.'
-    ).isLength({ min: 8 }),
-    validateFields
-  ],
-  register
-);
+// // register user
+// router.post(
+//   '/register',
+//   [
+//     check('username', 'El usuario es obligatorio.').not().isEmpty(),
+//     check('username', 'El usuario debe tener al menos 5 caracteres.').isLength({
+//       min: 5
+//     }),
+//     check('password', 'La contraseña es obligatoria.').not().isEmpty(),
+//     check(
+//       'password',
+//       'La contraseña debe tener al menos 8 caracteres.'
+//     ).isLength({ min: 8 }),
+//     validateFields
+//   ],
+//   register
+// );
 
-// login
-router.post(
-  '/login',
-  [
-    check('username', 'El usuario es obligatorio.').not().isEmpty(),
-    check('password', 'La contraseña es obligatoria.').not().isEmpty(),
-    validateFields
-  ],
-  login
-);
+// // login
+// router.post(
+//   '/login',
+//   [
+//     check('username', 'El usuario es obligatorio.').not().isEmpty(),
+//     check('password', 'La contraseña es obligatoria.').not().isEmpty(),
+//     validateFields
+//   ],
+//   login
+// );
 
-// renew token
-router.get('/renew', validateJWT, tokenRenewal);
+// // renew token
+// router.get('/renew', validateJWT, tokenRenewal);
 
-router.get('/users', getAllUsers);
+// router.get('/users', getAllUsers);
 
-router.get('/roles', getRoles);
+// router.get('/roles', getRoles);
 
-router.put('/users/:id', update);
+// router.put('/users/:id', update);
 
-router.get('/users/:id/role', getRole);
+// router.get('/users/:id/role', getRole);
 
-export default router;
+// export default router;
 
-// module.exports = router;
+// // module.exports = router;

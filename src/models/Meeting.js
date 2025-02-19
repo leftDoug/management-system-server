@@ -1,18 +1,20 @@
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
+
 import { Agreement } from './Agreement.js';
-import { MeetingAttendance } from './MeetingAttendance.js';
-import { Worker } from './Worker.js';
-import { WorkerMeeting } from './WorkerMeeting.js';
+import { MeetingAbsence } from './MeetingAbsence.js';
+import { MeetingGuest } from './MeetingGuest.js';
+import { TypeOfMeeting } from './TypeOfMeeting.js';
+import { User } from './User.js';
 
 export const Meeting = sequelize.define(
   'meeting',
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     name: {
       type: DataTypes.STRING,
@@ -23,37 +25,13 @@ export const Meeting = sequelize.define(
       allowNull: false
     },
     date: {
-      type: DataTypes.DATEONLY,
-      allowNull: false
+      type: DataTypes.DATEONLY
     },
     startTime: {
-      type: DataTypes.TIME,
-      allowNull: false
+      type: DataTypes.TIME
     },
     endTime: {
-      type: DataTypes.TIME,
-      allowNull: false
-    },
-    state: {
-      type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
-    },
-    idTypeOfMeeting: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'types_of_meetings',
-        key: 'id'
-      }
-    },
-    idSecretary: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'workers',
-        key: 'id'
-      }
+      type: DataTypes.TIME
     }
   },
   {
@@ -61,46 +39,77 @@ export const Meeting = sequelize.define(
   }
 );
 
-Worker.hasMany(Meeting, {
-  foreignKey: 'idSecretary',
-  allowNull: false
-});
-
-Meeting.belongsTo(Worker, {
-  foreignKey: 'idSecretary',
-  allowNull: false
-});
-
-Meeting.belongsToMany(Worker, {
-  through: WorkerMeeting,
-  foreignKey: 'idMeeting',
-  allowNull: false
-});
-
-Worker.belongsToMany(Meeting, {
-  through: WorkerMeeting,
-  foreignKey: 'idWorker',
-  allowNull: false
-});
-
-Worker.belongsToMany(Meeting, {
-  through: MeetingAttendance,
-  foreignKey: 'idWorker',
-  allowNull: false
-});
-
-Meeting.belongsToMany(Worker, {
-  through: MeetingAttendance,
-  foreignKey: 'idMeeting',
-  allowNull: false
-});
-
+// model Agreement (idMeeting)
 Meeting.hasMany(Agreement, {
-  foreignKey: 'idMeeting',
-  allowNull: false
+  foreignKey: {
+    name: 'idMeeting',
+    allowNull: false
+  }
 });
 
 Agreement.belongsTo(Meeting, {
-  foreignKey: 'idMeeting',
-  allowNull: false
+  foreignKey: {
+    name: 'idMeeting',
+    allowNull: false
+  }
+});
+
+// idSecretary
+User.hasMany(Meeting, {
+  foreignKey: {
+    name: 'idSecretary'
+  }
+});
+
+Meeting.belongsTo(User, {
+  foreignKey: {
+    name: 'idSecretary'
+  }
+});
+
+// idTypeOfMeeting
+TypeOfMeeting.hasMany(Meeting, {
+  foreignKey: {
+    name: 'idTypeOfMeeting',
+    allowNull: false
+  }
+});
+
+Meeting.belongsTo(TypeOfMeeting, {
+  foreignKey: {
+    name: 'idTypeOfMeeting',
+    allowNull: false
+  }
+});
+
+// model MeetingGuest (idMeeting)
+Meeting.belongsToMany(User, {
+  through: MeetingGuest,
+  foreignKey: {
+    name: 'idMeeting'
+  }
+});
+
+// model MeetingGuest (idGuest)
+User.belongsToMany(Meeting, {
+  through: MeetingGuest,
+  foreignKey: {
+    name: 'idGuest'
+  }
+});
+
+// model MeetingAbsence (idMeeting)
+Meeting.belongsToMany(User, {
+  through: MeetingAbsence,
+  foreignKey: {
+    name: 'idMeeting'
+  }
+});
+
+// model MeetingAbsence (idAbsent)
+User.belongsToMany(Meeting, {
+  through: MeetingAbsence,
+  foreignKey: {
+    name: 'idAbsent'
+  }
 });

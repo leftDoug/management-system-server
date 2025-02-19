@@ -11,16 +11,22 @@ import dotenv from 'dotenv';
 
 import { sequelize } from './db/config.js';
 import app from './app.js';
-import { Agreement } from './models/Agreement.js';
-import { Area } from './models/Area.js';
-import { TypeOfMeeting } from './models/TypeOfMeeting.js';
-import { Agenda } from './models/Agenda.js';
-import { Topic } from './models/Topic.js';
-import { WorkerMeeting } from './models/WorkerMeeting.js';
-import { Meeting } from './models/Meeting.js';
-import { Worker } from './models/Worker.js';
-import { WorkerArea } from './models/WorkerArea.js';
-import { User } from './models/User.js';
+import { Response } from './models/Response.js';
+import { MeetingAbsence } from './models/MeetingAbsence.js';
+import { MeetingGuest } from './models/MeetingGuest.js';
+import { Organization } from './models/Organization.js';
+import { OrganizationMember } from './models/OrganizationMember.js';
+// import { Agreement } from './models/Agreement.js';
+// import { Area } from './models/Area.js';
+// import { TypeOfMeeting } from './models/TypeOfMeeting.js';
+// import { Agenda } from './models/Agenda.js';
+// import { Topic } from './models/Topic.js';
+// import { WorkerMeeting } from './models/WorkerMeeting.js';
+// import { Meeting } from './models/Meeting.js';
+// import { Worker } from './models/Worker.js';
+// import { WorkerArea } from './models/WorkerArea.js';
+// import { User } from './models/User.js';
+// import { Role } from './models/Role.js';
 
 dotenv.config();
 
@@ -77,9 +83,11 @@ dotenv.config();
 
 async function main() {
   try {
-    // await sequelize.sync({ force: true });
-    // await User.sync({ alter: true });
-    // await Meeting.sync({ alter: true });
+    await sequelize.sync({ force: true });
+    // await MeetingAbsence.sync({ force: true });
+    // await MeetingGuest.sync({ force: true });
+    // await Organization.sync({ force: true });
+    // await OrganizationMember.sync({ force: true });
     // await Worker.sync({ alter: true });
     // await WorkerArea.sync({ alter: true });
     // await WorkerMeeting.sync({ alter: true });

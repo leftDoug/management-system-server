@@ -1,12 +1,11 @@
-// const { Model, DataTypes } = require('sequelize');
-// const db = require('../db/config');
-
-// const { DataTypes } = require('sequelize');
-// const { db } = require('../src/controllers/db/config');
-
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
+
+import { Area } from './Area.js';
+import { Organization } from './Organization.js';
+import { OrganizationMember } from './OrganizationMember.js';
+import { Role } from './Role.js';
 
 export const User = sequelize.define(
   'user',
@@ -18,8 +17,8 @@ export const User = sequelize.define(
     },
     username: {
       type: DataTypes.STRING,
-      allowNull: false,
       unique: true,
+      allowNull: false,
       validate: {
         notEmpty: {
           msg: 'El usuario es requerido'
@@ -33,29 +32,87 @@ export const User = sequelize.define(
       type: DataTypes.STRING,
       allowNull: false
     },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    occupation: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    email: {
+      type: DataTypes.STRING,
+      unique: true,
+      allowNull: false
+    },
     state: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
-    },
-    idRole: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'roles',
-        key: 'id'
-      }
-    },
-    idWorker: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'workers',
-        key: 'id'
-      }
+      defaultValue: true,
+      allowNull: false
     }
   },
-  { timestamps: false }
+  {
+    timestamps: false
+  }
 );
 
-// module.exports = User;
+// idArea
+Area.hasOne(User, {
+  foreignKey: {
+    name: 'idArea',
+    allowNull: false
+  }
+});
+
+User.belongsTo(Area, {
+  foreignKey: {
+    name: 'idArea',
+    allowNull: false
+  }
+});
+
+// idRole
+Role.hasOne(User, {
+  foreignKey: {
+    name: 'idRole',
+    allowNull: false
+  }
+});
+
+User.belongsTo(Role, {
+  foreignKey: {
+    name: 'idRole',
+    allowNull: false
+  }
+});
+
+// model Organization (idLeader)
+User.hasMany(Organization, {
+  foreignKey: {
+    name: 'idLeader',
+    allowNull: false
+  }
+});
+
+Organization.belongsTo(User, {
+  foreignKey: {
+    name: 'idLeader',
+    allowNull: false
+  }
+});
+
+// model OrganizationMember (idOrganization)
+Organization.belongsToMany(User, {
+  through: OrganizationMember,
+  foreignKey: {
+    name: 'idOrganization'
+  }
+});
+
+// model OrganizationMember (idMember)
+User.belongsToMany(Organization, {
+  through: OrganizationMember,
+  foreignKey: {
+    name: 'idMember'
+  }
+});

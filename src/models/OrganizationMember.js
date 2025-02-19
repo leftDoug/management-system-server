@@ -1,27 +1,28 @@
 import { DataTypes } from 'sequelize';
+
 import { sequelize } from '../db/config.js';
 
-export const WorkerMeeting = sequelize.define(
-  'workers_meetings',
+export const OrganizationMember = sequelize.define(
+  'organizationsMembers',
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
-    idMeeting: {
+    idOrganization: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'meetings',
+        model: 'organizations',
         key: 'id'
       }
     },
-    idWorker: {
-      type: DataTypes.INTEGER,
+    idMember: {
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
-        model: 'workers',
+        model: 'users',
         key: 'id'
       }
     }

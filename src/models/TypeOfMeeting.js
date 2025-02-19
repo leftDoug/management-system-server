@@ -1,33 +1,25 @@
-// const { DataTypes } = require('sequelize');
-// const { db } = require('../src/controllers/db/config');
-// const Agenda = require('./Agenda');
-// const Meeting = require('./Meeting');
-
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
+
 import { Agenda } from './Agenda.js';
-import { Meeting } from './Meeting.js';
 
 export const TypeOfMeeting = sequelize.define(
-  'types_of_meetings',
+  'typesOfMeetings',
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     name: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    frequency: {
-      type: DataTypes.STRING,
-      allowNull: false
-    },
     state: {
       type: DataTypes.BOOLEAN,
-      defaultValue: true
+      defaultValue: true,
+      allowNull: false
     }
   },
   {
@@ -36,12 +28,17 @@ export const TypeOfMeeting = sequelize.define(
   }
 );
 
-TypeOfMeeting.hasMany(Meeting, {
-  foreignKey: 'idTypeOfMeeting',
-  allowNull: false
+// model Agenda (idTypeOfMeeting)
+TypeOfMeeting.hasMany(Agenda, {
+  foreignKey: {
+    name: 'idTypeOfMeeting',
+    allowNull: false
+  }
 });
 
-Meeting.belongsTo(TypeOfMeeting, {
-  foreignKey: 'idTypeOfMeeting',
-  allowNull: false
+Agenda.belongsTo(TypeOfMeeting, {
+  foreignKey: {
+    name: 'idTypeOfMeeting',
+    allowNull: false
+  }
 });

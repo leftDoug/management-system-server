@@ -1,19 +1,19 @@
-import { Router } from 'express';
+// import { Router } from 'express';
 
-import {
-	getAll,
-	getAgreements,
-	getById,
-	create,
-	update,
-} from '../controllers/meeting.controller.js';
+// import {
+// 	getAll,
+// 	getAgreements,
+// 	getById,
+// 	create,
+// 	update,
+// } from '../controllers/meeting.controller.js';
 
-const router = Router();
+// const router = Router();
 
-router.get('/', getAll);
-router.post('/', create);
-router.get('/:id/agreements', getAgreements);
-router.get('/:id', getById);
-router.put('/:id', update);
+// router.get('/', getAll);
+// router.post('/', create);
+// router.get('/:id/agreements', getAgreements);
+// router.get('/:id', getById);
+// router.put('/:id', update);
 
-export default router;
+// export default router;

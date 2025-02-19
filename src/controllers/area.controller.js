@@ -4,7 +4,6 @@
 import { request, response } from 'express';
 import { Area } from '../models/Area.js';
 import { TypeOfMeeting } from '../models/TypeOfMeeting.js';
-import { Worker } from '../models/Worker.js';
 import { sequelize } from '../db/config.js';
 import { QueryTypes, where } from 'sequelize';
 import pc from 'picocolors';

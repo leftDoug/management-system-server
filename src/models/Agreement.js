@@ -1,25 +1,23 @@
-// const { DataTypes } = require('sequelize');
-// const { db } = require('../src/controllers/db/config');
-// const Response = require('./Response');
-
 import { DataTypes, Sequelize } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
+
 import { Response } from './Response.js';
+import { User } from './User.js';
 
 export const Agreement = sequelize.define(
   'agreement',
   {
     id: {
       type: DataTypes.STRING,
+      primaryKey: true,
+      unique: true,
       defaultValue: Sequelize.literal(
         "to_char(current_timestamp, 'YYYYMMDDHH24MISSMS')"
-      ),
-      primaryKey: true
+      )
     },
     number: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       allowNull: false
     },
     content: {
@@ -46,14 +44,32 @@ export const Agreement = sequelize.define(
   }
 );
 
+// model Response (idAgreement)
 Agreement.hasMany(Response, {
-  foreignKey: 'idAgreement',
-  targetKey: 'id'
+  foreignKey: {
+    name: 'idAgreement',
+    allowNull: false
+  }
 });
 
 Response.belongsTo(Agreement, {
-  foreignKey: 'idAgreement',
-  sourceKey: 'id'
+  foreignKey: {
+    name: 'idAgreement',
+    allowNull: false
+  }
 });
 
-// module.exports = Agreement;
+// idResponsible
+User.hasMany(Agreement, {
+  foreignKey: {
+    name: 'idResponsible',
+    allowNull: false
+  }
+});
+
+Agreement.belongsTo(User, {
+  foreignKey: {
+    name: 'idResponsible',
+    allowNull: false
+  }
+});

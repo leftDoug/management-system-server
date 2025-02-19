@@ -1,10 +1,7 @@
-// const { DataTypes } = require('sequelize');
-// const { db } = require('../src/controllers/db/config');
-// const Topic = require('./Topic');
-
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
+
 import { Topic } from './Topic.js';
 
 export const Agenda = sequelize.define(
@@ -12,8 +9,8 @@ export const Agenda = sequelize.define(
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
+      autoIncrement: true
     },
     year: {
       type: DataTypes.DATEONLY,
@@ -21,8 +18,8 @@ export const Agenda = sequelize.define(
     },
     state: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
-      defaultValue: true
+      defaultValue: true,
+      allowNull: false
     }
   },
   {
@@ -30,12 +27,17 @@ export const Agenda = sequelize.define(
   }
 );
 
+// model Topic (idAgenda)
 Agenda.hasMany(Topic, {
-  foreignKey: 'idAgenda',
-  allowNull: false
+  foreignKey: {
+    name: 'idAgenda',
+    allowNull: false
+  }
 });
 
 Topic.belongsTo(Agenda, {
-  foreignKey: 'idAgenda',
-  allowNull: false
+  foreignKey: {
+    name: 'idAgenda',
+    allowNull: false
+  }
 });
