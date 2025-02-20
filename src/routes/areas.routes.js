@@ -1,33 +1,22 @@
-// // const { Router } = require('express');
-// // const {
-// // 	getAllAreas,
-// // 	getByIdArea,
-// // 	createArea,
-// // 	updateArea,
-// // } = require('../controllers/area.controller');
+import { Router } from 'express';
 
-// import { Router } from 'express';
+import {
+  getAll,
+  getById,
+  getWorkers,
+  create,
+  update,
+  remove
+} from '../controllers/area.controller.js';
+import { findByPk } from '../middlewares/findByPk.js';
 
-// import {
-//   getAll,
-//   getById,
-//   getWorkers,
-//   create,
-//   update,
-//   getTypesOfMeetings,
-//   remove
-// } from '../controllers/area.controller.js';
+const router = Router();
 
-// const router = Router();
+router.get('/', getAll);
+router.post('/', create);
+router.get('/:id', findByPk, getById);
+router.get('/:id/workers', findByPk, getWorkers);
+router.patch('/:id', findByPk, update);
+router.patch('/remove/:id', findByPk, remove);
 
-// router.get('/', getAll);
-// router.post('/', create);
-// router.get('/:id', getById);
-// router.get('/:id/types-of-meetings', getTypesOfMeetings);
-// router.get('/:id/workers', getWorkers);
-// router.patch('/:id', update);
-// router.patch('/remove/:id', remove);
-
-// export default router;
-
-// // module.exports = router;
+export default router;

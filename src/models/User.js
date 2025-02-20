@@ -57,7 +57,7 @@ export const User = sequelize.define(
 );
 
 // idArea
-Area.hasOne(User, {
+Area.hasMany(User, {
   foreignKey: {
     name: 'idArea',
     allowNull: false
@@ -72,7 +72,7 @@ User.belongsTo(Area, {
 });
 
 // idRole
-Role.hasOne(User, {
+Role.hasMany(User, {
   foreignKey: {
     name: 'idRole',
     allowNull: false
