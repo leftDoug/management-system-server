@@ -1,15 +1,7 @@
-// const { Router } = require('express');
-// const {
-// 	create,
-// 	getAll,
-// 	getById,
-// 	remove,
-// 	update,
-// } = require('../controllers/role.controller');
-
 import { Router } from 'express';
 
 import { getAll, getById } from '../controllers/role.controller.js';
+import { findByPk } from '../middlewares/findByPk.js';
 
 const router = Router();
 
@@ -61,7 +53,7 @@ router.get('/', getAll);
  *                   name:
  *                     type: string
  */
-router.get('/:id', getById);
+router.get('/:id', findByPk, getById);
 
 /**
  * @swagger
@@ -150,5 +142,3 @@ router.get('/:id', getById);
 // router.delete('/:id', remove);
 
 export default router;
-
-// module.exports = router;

@@ -1,26 +1,21 @@
 import { request, response } from 'express';
 
-import { Area } from '../models/Area.js';
+import { Organization } from '../models/Organization.js';
 
 export const getAll = async (req = request, res = response) => {
-  // XXX activarlo para saber de donde viene la request
-  // const origin = req.header('origin');
-
-  // console.log(pc.blue(pc.bold('ORIGIN:')), pc.bgBlue(pc.bold(origin)));
-
   try {
-    const dbAreas = await Area.findAll();
+    const dbOrganizations = await Organization.findAll();
 
     return res.json({
       ok: true,
-      arg: dbAreas
+      arg: dbOrganizations
     });
   } catch (err) {
     console.error(err);
 
     return res.status(500).json({
       ok: false,
-      msg: 'Error al listar las Áreas.'
+      msg: 'Error al listar las Organizaciones.'
     });
   }
 };
@@ -29,40 +24,40 @@ export const getById = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    const dbArea = await Area.findByPk(id);
+    const dbOrganization = await Organization.findByPk(id);
 
     return res.json({
       ok: true,
-      arg: dbArea
+      arg: dbOrganization
     });
   } catch (err) {
     console.error(err);
 
     return res.status(500).json({
       ok: false,
-      msg: 'Error al buscar el Área.'
+      msg: 'Error al buscar la Organización.'
     });
   }
 };
 
 export const create = async (req = request, res = response, next) => {
-  const { name } = req.body;
+  const { name, idLeader } = req.body;
 
   try {
-    const dbArea = await Area.findOne({ where: { name } });
+    const dbOrganization = await Organization.findOne({ where: { name } });
 
-    if (dbArea) {
+    if (dbOrganization) {
       return res.status(400).json({
         ok: false,
-        msg: 'Ya existe un Área con este nombre.'
+        msg: 'Ya existe una Organización con este nombre.'
       });
     }
 
-    await Area.create({ name });
+    await Organization.create({ name, idLeader });
 
     return res.status(201).json({
       ok: true,
-      msg: 'Área creada correctamente.'
+      msg: 'Organización creada correctamente.'
     });
   } catch (err) {
     if (err.name === 'SequelizeValidationError') {
@@ -72,7 +67,7 @@ export const create = async (req = request, res = response, next) => {
 
       return res.status(500).json({
         ok: false,
-        msg: 'Error al crear el Área.'
+        msg: 'Error al crear la Organizoción.'
       });
     }
   }
@@ -80,23 +75,23 @@ export const create = async (req = request, res = response, next) => {
 
 export const update = async (req = request, res = response, next) => {
   const { id } = req.params;
-  const { name } = req.body;
+  const { name, idLeader } = req.body;
 
   try {
-    const dbArea = await Area.findOne({ where: { name } });
+    const dbOrganization = await Organization.findOne({ where: { name } });
 
-    if (dbArea && dbArea.id !== id) {
+    if (dbOrganization && dbOrganization.id !== id) {
       return res.status(400).json({
         ok: true,
-        msg: 'Ya existe un Área con ese nombre.'
+        msg: 'Ya existe una Organización con ese nombre.'
       });
     }
 
-    await Area.update({ name }, { where: { id } });
+    await Organization.update({ name, idLeader }, { where: { id } });
 
     return res.json({
       ok: true,
-      msg: 'Área actualizada correctamente.'
+      msg: 'Organización actualizada correctamente.'
     });
   } catch (err) {
     if (err.name === 'SequelizeValidationError') {
@@ -106,7 +101,7 @@ export const update = async (req = request, res = response, next) => {
 
       return res.status(500).json({
         ok: false,
-        msg: 'Error al actualizar el Área.'
+        msg: 'Error al actualizar la Organización.'
       });
     }
   }
@@ -116,18 +111,18 @@ export const remove = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    await Area.update({ state: false }, { where: { id } });
+    await Organization.update({ state: false }, { where: { id } });
 
     return res.json({
       ok: true,
-      msg: 'Área eliminada.'
+      msg: 'Organización eliminada.'
     });
   } catch (err) {
     console.error(err);
 
     return res.status(500).json({
       ok: false,
-      msg: 'Error al eliminar el Área.'
+      msg: 'Error al eliminar la Organización.'
     });
   }
 };
@@ -136,8 +131,8 @@ export const getWorkers = async (req = request, res = response) => {
   const { id } = req.params;
 
   try {
-    const dbArea = await Area.findByPk(id);
-    const dbWorkers = await dbArea.getUsers();
+    const dbOrganization = await Organization.findByPk(id);
+    const dbWorkers = await dbOrganization.getUsers();
 
     res.json({
       ok: true,
@@ -153,15 +148,15 @@ export const getWorkers = async (req = request, res = response) => {
   }
 };
 
-export const removeAll = async (req, res) => {
-  try {
-    await Area.truncate();
+// export const removeAll = async (req, res) => {
+//   try {
+//     await Area.truncate();
 
-    return res.json({
-      ok: true,
-      msg: 'Áreas eliminadas.'
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+//     return res.json({
+//       ok: true,
+//       msg: 'Áreas eliminadas.'
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };

@@ -2,17 +2,38 @@
 GET http://localhost:4000/api/auth/users HTTP/1.1
 
 ### getUserById
-GET http://locolhost:4000/api/auth/users/fab009e0-e949-11ef-9a97-e11b3d25c77f HTTP/1.1
+GET http://localhost:4000/api/auth/users/1b38b1d0-efee-11ef-a14b-dbf1a2c78c20 HTTP/1.1
+
+### getUserInfo
+GET http://localhost:4000/api/auth/users/1b38b1d0-efee-11ef-a14b-dbf1a2c78c20/info HTTP/1.1
 
 ### register
 POST http://localhost:4000/api/auth/register HTTP/1.1
 Content-Type: application/json
 
 {
-  "username":"usuario1",
-  "password":"12345678",
-  "idWorker":1,
-  "idRole":1
+  "name": "Osmani Lopez",
+    "occupation": "Especialista Principal",
+    "email": "esprrhh@fevex.cu",
+    "idArea": 5,
+    "username": "esprrhh",
+    "password": "12345678",
+    "idRole": 1
+}
+
+### update
+PATCH http://localhost:4000/api/auth/users/6b4f78c0-efee-11ef-a14b-dbf1a2c78c20/update HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Jane Doe",
+    "occupation": "Directora RRHH",
+    "email": "dir.rrhh@fevex.cu",
+    "idArea": 7,
+    "username": "dirrrhh",
+    "oldPassword": "12345678",
+    "newPassword": "12345678",
+    "idRole": 3
 }
 
 ### login

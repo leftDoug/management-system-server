@@ -1,258 +1,332 @@
-// // const { response, request } = require('express');
-// // const User = require('../models/User');
-// // const bcrypt = require('bcryptjs');
-// // const { generateJWT } = require('../helpers/jwt');
+import bcrypt from 'bcryptjs';
+import pc from 'picocolors';
+import { QueryTypes } from 'sequelize';
+import { request, response } from 'express';
 
-// import { request, response } from 'express';
-// import bcrypt from 'bcryptjs';
+import { generateJWT } from '../helpers/jwt.js';
+import { sequelize } from '../db/config.js';
 
-// import { generateJWT } from '../helpers/jwt.js';
-// import { User } from '../models/User.js';
-// import { Role } from '../models/Role.js';
-// import pc from 'picocolors';
-// import { sequelize } from '../db/config.js';
-// import { QueryTypes } from 'sequelize';
+import { User } from '../models/User.js';
 
-// export const login = async (req = request, res = response) => {
-//   const { username, password } = req.body;
-//   const origin = req.header('origin');
+// FIXME arreglar los mensajes de error para usuario o contrasena incorrecta
+export const login = async (req = request, res = response) => {
+  const { username, password } = req.body;
 
-//   console.log(pc.bgBlue(pc.bold(origin)));
+  try {
+    const dbUser = await User.findOne({ where: { username } });
 
-//   try {
-//     const dbUser = await User.findOne({ where: { username } });
+    if (!dbUser) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Usuario incorrecto'
+      });
+    }
 
-//     if (!dbUser) {
-//       return res.status(400).json({
-//         ok: false,
-//         msg: 'Usuario incorrecto'
-//       });
-//     }
+    const validPassword = bcrypt.compareSync(password, dbUser.password);
 
-//     const validPassword = bcrypt.compareSync(password, dbUser.password);
+    if (!validPassword) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Contraseña incorrecta'
+      });
+    }
 
-//     if (!validPassword) {
-//       return res.status(400).json({
-//         ok: false,
-//         msg: 'Contraseña incorrecta'
-//       });
-//     }
+    const token = await generateJWT(dbUser.id, username);
 
-//     const token = await generateJWT(dbUser.id, username);
+    // XXX ver como se puede mandar el token a la cache
+    return res.json({
+      ok: true,
+      id: dbUser.id,
+      username,
+      token: token
+    });
+  } catch (err) {
+    console.error(err);
 
-//     return res.json({
-//       ok: true,
-//       id: dbUser.id,
-//       idWorker: dbUser.idWorker,
-//       token: token
-//     });
-//   } catch (err) {
-//     console.error(err);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al iniciar sesión'
+    });
+  }
+};
 
-//     return res.status(500).json({
-//       ok: false,
-//       msg: 'Error al iniciar sesión'
-//     });
-//   }
-// };
+export const register = async (req = request, res = response, next) => {
+  const { name, occupation, email, idArea, username, password, idRole } =
+    req.body;
 
-// export const register = async (req = request, res = response) => {
-//   const { username, password, idWorker, idRole } = req.body;
+  try {
+    let user = await User.findOne({ where: { username } });
 
-//   try {
-//     let user = await User.findOne({ where: { username } });
+    if (user) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Este nombre de usuario ya está en uso.'
+      });
+    }
 
-//     if (user) {
-//       return res.status(400).json({
-//         ok: false,
-//         msg: 'Este nombre de usuario ya existe.'
-//       });
-//     }
+    user = await User.findOne({ where: { email } });
 
-//     user = await User.findOne({ where: { idWorker } });
+    if (user) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Este correo ya está en uso.'
+      });
+    }
 
-//     if (user) {
-//       return res.status(400).json({
-//         ok: false,
-//         msg: 'Este trabajador ya tiene un usuario creado.'
-//       });
-//     }
+    const users = await User.findAll({ where: { name } });
+    const coincidence = users.some(
+      (user) => user.occupation === occupation && user.idArea === idArea
+    );
 
-//     user = await User.create({
-//       username,
-//       password,
-//       idWorker,
-//       idRole
-//     });
+    if (coincidence) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Este trabajador ya tiene un Usuario creado.'
+      });
+    }
 
-//     // hash password
-//     const salt = bcrypt.genSaltSync();
+    // hash password
+    const salt = bcrypt.genSaltSync();
+    const pwd = bcrypt.hashSync(password, salt);
+    // XXX ver si es mejor lo de hashear la pwd en el modelo directamente
+    user = await User.create({
+      name,
+      occupation,
+      email,
+      idArea,
+      username,
+      password: pwd,
+      idRole
+    });
 
-//     user.password = bcrypt.hashSync(password, salt);
+    // XXX se quito el token de la  respuesta xk no va
+    // const token = await generateJWT(user.id, username);
 
-//     const token = await generateJWT(user.id, username);
+    await user.save();
 
-//     await user.save();
+    return res.status(201).json({
+      ok: true,
+      msg: 'Usuario creado correctamente.'
+      // token
+    });
+  } catch (err) {
+    if (err.name === 'SequelizeValidationError') {
+      next(err);
+    } else {
+      console.error(err);
 
-//     return res.status(201).json({
-//       ok: true,
-//       msg: 'Usuario creado.',
-//       token
-//     });
-//   } catch (err) {
-//     console.error(err);
+      return res.status(500).json({
+        ok: false,
+        msg: 'Error al crear el Usuario.'
+      });
+    }
+  }
+};
 
-//     return res.status(500).json({
-//       ok: false,
-//       msg: 'Error al crear el usuario.'
-//     });
-//   }
-// };
+// XXX falta testear esta funcion
+export const tokenRenewal = async (req = request, res = response) => {
+  const { id, username } = req;
 
-// export const tokenRenewal = async (req = request, res = response) => {
-//   const { id, username } = req;
+  const token = await generateJWT(id, username);
 
-//   const token = await generateJWT(id, username);
+  const dbUser = await User.findByPk(id);
 
-//   const dbUser = await User.findByPk(id);
+  return res.json({
+    ok: true,
+    id,
+    idWorker: dbUser.idWorker,
+    token
+  });
+};
 
-//   return res.json({
-//     ok: true,
-//     id,
-//     idWorker: dbUser.idWorker,
-//     token
-//   });
-// };
+export const update = async (req = request, res = response, next) => {
+  const { id } = req.params;
+  const {
+    name,
+    occupation,
+    email,
+    idArea,
+    username,
+    oldPassword,
+    newPassword,
+    idRole
+  } = req.body;
 
-// export const update = async (req, res) => {
-//   const id = req.params.id;
-//   const { username, oldPassword, newPassword, idWorker, idRole } = req.body;
+  try {
+    const dbUser = await User.findByPk(id);
+    let user = await User.findOne({ where: { username } });
 
-//   try {
-//     const dbUser = await User.findByPk(id);
-//     let user = await User.findOne({ where: { username } });
+    if (user && user.id !== id) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Este nombre de usuario ya está en uso.'
+      });
+    }
 
-//     if (user) {
-//       if (user.username === username && dbUser.username !== username) {
-//         return res.status(400).json({
-//           ok: false,
-//           msg: 'Este nombre de usuario ya existe'
-//         });
-//       }
-//     }
+    user = await User.findOne({ where: { email } });
 
-//     user = await User.findOne({ where: { idWorker } });
+    if (user && user.id !== id) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Este correo ya está en uso.'
+      });
+    }
 
-//     if (user) {
-//       if (user.idWorker !== dbUser.idWorker) {
-//         return res.status(400).json({
-//           ok: false,
-//           msg: 'Este trabajador ya tiene un usuario creado'
-//         });
-//       }
-//     }
+    const users = await User.findAll({ where: { name } });
+    const coincidence = users.some(
+      (user) =>
+        user !== dbUser &&
+        user.occupation === occupation &&
+        user.idArea === idArea
+    );
 
-//     const validPassword = bcrypt.compareSync(oldPassword, dbUser.password);
+    if (coincidence) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Este trabajador ya tiene un Usuario creado.'
+      });
+    }
 
-//     if (!validPassword) {
-//       return res.status(400).json({
-//         ok: false,
-//         msg: 'Contraseña incorrecta'
-//       });
-//     }
+    const validPassword = bcrypt.compareSync(oldPassword, dbUser.password);
 
-//     const salt = bcrypt.genSaltSync();
+    if (!validPassword) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Contraseña incorrecta'
+      });
+    }
 
-//     const newHashedPassword = bcrypt.hashSync(newPassword, salt);
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        ok: false,
+        msg: 'La contraseña debe tener 6 caracteres o más.'
+      });
+    }
 
-//     await User.update(
-//       {
-//         username,
-//         password: newHashedPassword,
-//         idWorker,
-//         idRole
-//       },
-//       { where: { id } }
-//     );
+    const salt = bcrypt.genSaltSync();
 
-//     const token = await generateJWT(dbUser.id, username);
+    const newHashedPassword = bcrypt.hashSync(newPassword, salt);
 
-//     return res.json({
-//       ok: true,
-//       msg: 'Usuario actualizado',
-//       token
-//     });
-//   } catch (error) {
-//     console.error(error);
+    await User.update(
+      {
+        name,
+        occupation,
+        email,
+        idArea,
+        username,
+        password: newHashedPassword,
+        idRole
+      },
+      { where: { id } }
+    );
 
-//     return res.status(500).json({
-//       ok: false,
-//       msg: 'Error al actualizar el usuario'
-//     });
-//   }
-// };
+    const token = await generateJWT(dbUser.id, username);
 
-// export const getRole = async (req, res) => {
-//   const id = req.params.id;
-//   debugger;
-//   try {
-//     const dbUser = await User.findByPk(id);
-//     const dbRole = await dbUser.getRole();
+    return res.json({
+      ok: true,
+      msg: 'Usuario actualizado.',
+      token
+    });
+  } catch (error) {
+    if (error.name === 'SequelizeValidationError') {
+      next(error);
+    }
+    console.error(error);
 
-//     return res.json({
-//       ok: true,
-//       arg: dbRole
-//     });
-//   } catch (error) {
-//     console.error(error);
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al actualizar el Usuario'
+    });
+  }
+};
 
-//     return res.status(500).json({
-//       ok: false,
-//       msg: 'Error al obtener el rol del usuario'
-//     });
-//   }
-// };
+export const getAllUsers = async (req = request, res = response) => {
+  try {
+    const dbUsers = await sequelize.query(`SELECT * FROM view_users`, {
+      type: QueryTypes.SELECT
+    });
 
-// export const getAllUsers = async (req = request, res = response) => {
-//   try {
-//     const dbUsers = await sequelize.query(`SELECT * FROM view_users`, {
-//       type: QueryTypes.SELECT
-//     });
+    res.json({
+      ok: true,
+      arg: dbUsers
+    });
+  } catch (error) {
+    console.error(error);
 
-//     res.json({
-//       ok: true,
-//       arg: dbUsers
-//     });
-//   } catch (error) {
-//     console.error(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener los Usuarios'
+    });
+  }
+};
 
-//     res.status(500).json({
-//       ok: false,
-//       msg: 'Error al obtener los usuarios'
-//     });
-//   }
-// };
+export const getAllWorkers = async (req = request, res = response) => {
+  try {
+    const dbWorkers = await sequelize.query(`SELECT * FROM view_workers`, {
+      type: QueryTypes.SELECT
+    });
 
-// export const getRoles = async (req = request, res = response) => {
-//   try {
-//     const dbRoles = await Role.findAll();
+    res.json({
+      ok: true,
+      arg: dbWorkers
+    });
+  } catch (error) {
+    console.error(error);
 
-//     res.json({
-//       ok: true,
-//       arg: dbRoles
-//     });
-//   } catch (error) {
-//     console.error(error);
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener los Trabajadores.'
+    });
+  }
+};
 
-//     res.status(500).json({
-//       ok: false,
-//       msg: 'Error al obtener los roles'
-//     });
-//   }
-// };
+export const getById = async (req = request, res = response) => {
+  const { id } = req.params;
 
-// // module.exports = {
-// // 	login,
-// // 	registerUser,
-// // 	renew,
-// // };
+  try {
+    const dbUser = await User.findByPk(id);
+
+    return res.json({
+      ok: true,
+      arg: dbUser
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener el Usuario.'
+    });
+  }
+};
+
+export const getInfo = async (req = request, res = response) => {
+  const { id } = req.params;
+
+  try {
+    const result = await sequelize.query(
+      `
+      			SELECT fn_user_getinfo(:id, 'dbuser');
+            FETCH ALL IN dbuser;
+      			`,
+      {
+        replacements: { id: id },
+        type: QueryTypes.SELECT
+      }
+    );
+
+    const dbUser = result[1];
+
+    return res.json({
+      ok: true,
+      arg: dbUser
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener el Usuario.'
+    });
+  }
+};

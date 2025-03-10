@@ -1,40 +1,18 @@
-// const { Client } = require('pg');
-// require('dotenv').config();
-// const { Sequelize } = require('sequelize');
-// const User = require('../../../models/User');
-
 import Sequelize from 'sequelize';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const sequelize = new Sequelize(
-	process.env.DB_NAME,
-	process.env.DB_USER,
-	process.env.DB_PASSWORD,
-	{ host: process.env.DB_HOST, dialect: 'postgres' }
-);
+const { DB_NAME, DB_TEST_NAME, DB_USER, DB_PASSWORD, DB_HOST, NODE_ENV } =
+  process.env;
 
-// const db = new Sequelize(
-// 	process.env.DB_NAME,
-// 	process.env.DB_USER,
-// 	process.env.DB_PASSWORD,
-// 	{ host: process.env.DB_HOST, dialect: 'postgres' }
-// );
-
-// const dbConnection = async () => {
-// 	try {
-// 		db.sync({ force: true });
-
-// 		console.log('DB connected');
-// 	} catch (error) {
-// 		console.error(error);
-
-// 		throw new Error('Error en la conexión con la BD');
-// 	}
-// };
-
-// module.exports = {
-// 	db,
-// 	dbConnection,
-// };
+export const sequelize =
+  NODE_ENV === 'test'
+    ? new Sequelize(DB_TEST_NAME, DB_USER, DB_PASSWORD, {
+        host: DB_HOST,
+        dialect: 'postgres'
+      })
+    : new Sequelize(DB_NAME, DB_USER, DB_PASSWORD, {
+        host: DB_HOST,
+        dialect: 'postgres'
+      });

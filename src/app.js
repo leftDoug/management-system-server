@@ -4,7 +4,7 @@ import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
 import areasRoutes from './routes/areas.routes.js';
-// import authRoutes from './routes/auth.routes.js';
+import authRoutes from './routes/auth.routes.js';
 // import workersRoutes from './routes/workers.routes.js';
 import typesOfMeetingsRoutes from './routes/types-of-meetings.routes.js';
 import rolesRoutes from './routes/roles.routes.js';
@@ -54,7 +54,7 @@ const swaggerSpec = swaggerJSDoc(options);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // routes
-// app.use('/api/auth', authRoutes);
+app.use('/api/auth', authRoutes);
 app.use('/api/areas', areasRoutes);
 // app.use('/api/workers', workersRoutes);
 app.use('/api/types-of-meetings', typesOfMeetingsRoutes);
