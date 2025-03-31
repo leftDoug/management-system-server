@@ -6,6 +6,8 @@ import { server } from '../index.js';
 
 import { Area } from '../models/Area';
 import { User } from '../models/User';
+import { createViews } from '../db/views.js';
+import { createFunctions } from '../db/functions.js';
 
 const api = request(app);
 const initialArea = { name: 'RRHH' };
@@ -31,12 +33,16 @@ const initialUsers = [
 ];
 
 beforeAll(async () => {
+  await sequelize.authenticate();
   await sequelize.query(
     `
     TRUNCATE TABLE areas RESTART IDENTITY CASCADE;
     `
   );
   await Area.create(initialArea);
+
+  await createViews();
+  await createFunctions();
 });
 
 beforeEach(async () => {
@@ -45,6 +51,7 @@ beforeEach(async () => {
     TRUNCATE TABLE users RESTART IDENTITY CASCADE;
     `
   );
+
   await api.post('/api/auth/register').send(initialUsers[0]);
   await api.post('/api/auth/register').send(initialUsers[1]);
 });

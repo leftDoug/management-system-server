@@ -1,0 +1,36 @@
+### getAll
+GET http://localhost:4000/api/organizations HTTP/1.1
+
+### getById
+GET http://localhost:4000/api/organizations/3 HTTP/1.1
+
+### getWorkers
+GET http://localhost:4000/api/organizations/26/workers HTTP/1.1
+
+### update
+PATCH http://localhost:4000/api/organizations/6 HTTP/1.1
+Content-Type: application/json
+
+{
+  "id": 6,
+  "name": "Seis. Siete",
+  "state": true,
+  "idLeader": "6b4f78c0-efee-11ef-a14b-dbf1a2c78c20"
+}
+
+### create
+POST http://localhost:4000/api/organizations HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "Ocho",
+  "idLeader":"9ddb61f0-efee-11ef-a14b-dbf1a2c78c20"
+}
+
+### addWorkers
+POST http://localhost:4000/api/organizations/18 HTTP/1.1
+Content-Type: application/json
+
+{
+  "workersId":["6b4f78c0-efee-11ef-a14b-dbf1a2c78c20","1b38b1d0-efee-11ef-a14b-dbf1a2c78c20"]
+}

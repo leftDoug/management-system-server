@@ -19,3 +19,7 @@ export const Response = sequelize.define(
     timestamps: false
   }
 );
+
+export const getResponseModel = () => {
+  return Response;
+};

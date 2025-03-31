@@ -44,3 +44,7 @@ export const Area = sequelize.define(
     timestamps: false
   }
 );
+
+export const getAreaModel = () => {
+  return Area;
+};

@@ -260,7 +260,7 @@ export const getAllUsers = async (req = request, res = response) => {
   }
 };
 
-export const getAllWorkers = async (req = request, res = response) => {
+export const getWorkers = async (req = request, res = response) => {
   try {
     const dbWorkers = await sequelize.query(`SELECT * FROM view_workers`, {
       type: QueryTypes.SELECT

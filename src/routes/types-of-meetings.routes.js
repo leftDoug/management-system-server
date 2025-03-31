@@ -9,20 +9,23 @@
 import { Router } from 'express';
 
 import {
-  getAll,
   getById,
   getMeetings,
   create,
   update,
-  remove
+  remove,
+  getInfo,
+  getAgendas
 } from '../controllers/type-of-meeting.controller.js';
 
 const router = Router();
 
-router.get('/', getAll);
+// router.get('/', getAll);
 router.post('/', create);
 router.get('/:id', getById);
+router.get('/:id/info', getInfo);
 router.get('/:id/meetings', getMeetings);
+router.get('/:id/agendas', getAgendas);
 router.patch('/:id', update);
 router.patch('/remove/:id', remove);
 

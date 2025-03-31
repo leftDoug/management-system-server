@@ -1,6 +1,9 @@
 ### getUsers
 GET http://localhost:4000/api/auth/users HTTP/1.1
 
+### getWorkers
+GET http://localhost:4000/api/auth/workers HTTP/1.1
+
 ### getUserById
 GET http://localhost:4000/api/auth/users/1b38b1d0-efee-11ef-a14b-dbf1a2c78c20 HTTP/1.1
 

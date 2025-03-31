@@ -1,6 +1,7 @@
 import { DataTypes } from 'sequelize';
 
 import { sequelize } from '../db/config.js';
+import { TypeOfMeeting } from './TypeOfMeeting.js';
 
 export const Organization = sequelize.define(
   'organization',
@@ -25,3 +26,21 @@ export const Organization = sequelize.define(
     timestamps: false
   }
 );
+
+export const getOrganizationModel = () => {
+  return Organization;
+};
+
+// Organization.hasMany(TypeOfMeeting, {
+//   foreignKey: {
+//     name: 'idOrganization',
+//     allowNull: false
+//   }
+// });
+
+// TypeOfMeeting.belongsTo(Organization, {
+//   foreignKey: {
+//     name: 'idOrganization',
+//     allowNull: false
+//   }
+// });

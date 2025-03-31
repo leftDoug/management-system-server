@@ -2,16 +2,62 @@ import dotenv from 'dotenv';
 import pc from 'picocolors';
 
 import app from './app.js';
+
 import { sequelize } from './db/config.js';
 import { createViews } from './db/views.js';
 import { createFunctions } from './db/functions.js';
 
+import { Agenda, getAgendaModel } from './models/Agenda.js';
+import { Agreement, getAgreementModel } from './models/Agreement.js';
+import { Area, getAreaModel } from './models/Area.js';
+import { getMeetingModel, Meeting } from './models/Meeting.js';
+import {
+  getMeetingWorkerModel,
+  MeetingWorker
+} from './models/MeetingWorker.js';
+import { getOrganizationModel, Organization } from './models/Organization.js';
+import {
+  getOrganizationMemberModel,
+  OrganizationMember
+} from './models/OrganizationMember.js';
+import { getResponseModel, Response } from './models/Response.js';
+import { getRoleModel, Role } from './models/Role.js';
+import { getTopicModel, Topic } from './models/Topic.js';
+import {
+  getTypeOfMeetingModel,
+  TypeOfMeeting
+} from './models/TypeOfMeeting.js';
+import { getUserModel, User } from './models/User.js';
+
+import setupAssociations from './models/associations.js';
+
 dotenv.config();
+
+const models = {
+  Agenda: getAgendaModel(),
+  Agreement: getAgreementModel(),
+  Area: getAreaModel(),
+  Meeting: getMeetingModel(),
+  Organization: getOrganizationModel(),
+  Response: getResponseModel(),
+  Role: getRoleModel(),
+  Topic: getTopicModel(),
+  TypeOfMeeting: getTypeOfMeetingModel(),
+  User: getUserModel(),
+  MeetingWorker: getMeetingWorkerModel(),
+  OrganizationMember: getOrganizationMemberModel()
+};
+
+setupAssociations(models);
 
 async function dbConnection() {
   try {
     await sequelize.authenticate();
-    // await sequelize.sync();
+    // await Agreement.sync({ force: true });
+    // await Organization.sync({ alter: true });
+    // await TypeOfMeeting.sync({ alter: true });
+    // await Agenda.sync({ force: true });
+    // await Topic.sync({ force: true });
     await createViews();
     await createFunctions();
 

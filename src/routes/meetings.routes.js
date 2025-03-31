@@ -1,19 +1,31 @@
-// import { Router } from 'express';
+import { Router } from 'express';
 
-// import {
-// 	getAll,
-// 	getAgreements,
-// 	getById,
-// 	create,
-// 	update,
-// } from '../controllers/meeting.controller.js';
+import {
+  getAll,
+  getAgreements,
+  getById,
+  create,
+  update,
+  getInfo,
+  // getParticipants,
+  // getOrganization,
+  setAttendance,
+  setOpen,
+  setClose
+} from '../controllers/meeting.controller.js';
 
-// const router = Router();
+const router = Router();
 
-// router.get('/', getAll);
-// router.post('/', create);
-// router.get('/:id/agreements', getAgreements);
-// router.get('/:id', getById);
-// router.put('/:id', update);
+router.get('/', getAll);
+router.post('/', create);
+router.get('/agreements/:id', getAgreements);
+// router.get('/:id/participants', getParticipants);
+// router.get('/:id/organization', getOrganization);
+router.get('/:id', getById);
+router.get('/info/:id', getInfo);
+router.patch('/:id', update);
+router.patch('/attendance/:id', setAttendance);
+router.patch('/open/:id', setOpen);
+router.patch('/close/:id', setClose);
 
-// export default router;
+export default router;

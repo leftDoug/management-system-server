@@ -1,19 +1,23 @@
-// import { Router } from 'express';
+import { Router } from 'express';
 
-// import {
-// 	getAll,
-// 	getById,
-// 	getInfo,
-// 	create,
-// 	update,
-// } from '../controllers/agreement.controller.js';
+import {
+  getAll,
+  getById,
+  getInfo,
+  create,
+  update,
+  getResponses,
+  setCompleted
+} from '../controllers/agreement.controller.js';
 
-// const router = Router();
+const router = Router();
 
-// router.get('/', getAll);
-// router.get('/:id', getById);
-// router.get('/info/:id', getInfo);
-// router.post('/', create);
-// router.put('/:id', update);
+router.get('/', getAll);
+router.get('/:id', getById);
+router.get('/info/:id', getInfo);
+router.get('/responses/:id', getResponses);
+router.post('/', create);
+router.patch('/:id', update);
+router.patch('/complete/:id', setCompleted);
 
-// export default router;
+export default router;

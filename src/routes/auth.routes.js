@@ -4,7 +4,7 @@ import { validateJWT } from '../middlewares/validate-jwt.js';
 
 import {
   getAllUsers,
-  getAllWorkers,
+  getWorkers,
   getById,
   getInfo,
   login,
@@ -31,7 +31,7 @@ router.get('/users/:id', findByPk, getById);
 
 router.get('/users/:id/info', findByPk, getInfo);
 
-router.get('/workers', getAllWorkers);
+router.get('/workers', getWorkers);
 
 router.patch('/users/:id/update', findByPk, update);
 

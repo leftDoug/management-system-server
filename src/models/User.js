@@ -127,63 +127,67 @@ export const User = sequelize.define(
   }
 );
 
-// idArea
-Area.hasMany(User, {
-  foreignKey: {
-    name: 'idArea',
-    allowNull: false
-  }
-});
+export const getUserModel = () => {
+  return User;
+};
 
-User.belongsTo(Area, {
-  foreignKey: {
-    name: 'idArea',
-    allowNull: false
-  }
-});
+// // idArea
+// Area.hasMany(User, {
+//   foreignKey: {
+//     name: 'idArea',
+//     allowNull: false
+//   }
+// });
 
-// idRole
-Role.hasMany(User, {
-  foreignKey: {
-    name: 'idRole',
-    allowNull: false
-  }
-});
+// User.belongsTo(Area, {
+//   foreignKey: {
+//     name: 'idArea',
+//     allowNull: false
+//   }
+// });
 
-User.belongsTo(Role, {
-  foreignKey: {
-    name: 'idRole',
-    allowNull: false
-  }
-});
+// // idRole
+// Role.hasMany(User, {
+//   foreignKey: {
+//     name: 'idRole',
+//     allowNull: false
+//   }
+// });
 
-// model Organization (idLeader)
-User.hasMany(Organization, {
-  foreignKey: {
-    name: 'idLeader',
-    allowNull: false
-  }
-});
+// User.belongsTo(Role, {
+//   foreignKey: {
+//     name: 'idRole',
+//     allowNull: false
+//   }
+// });
 
-Organization.belongsTo(User, {
-  foreignKey: {
-    name: 'idLeader',
-    allowNull: false
-  }
-});
+// // model Organization (idLeader)
+// User.hasMany(Organization, {
+//   foreignKey: {
+//     name: 'idLeader',
+//     allowNull: false
+//   }
+// });
 
-// model OrganizationMember (idOrganization)
-Organization.belongsToMany(User, {
-  through: OrganizationMember,
-  foreignKey: {
-    name: 'idOrganization'
-  }
-});
+// Organization.belongsTo(User, {
+//   foreignKey: {
+//     name: 'idLeader',
+//     allowNull: false
+//   }
+// });
 
-// model OrganizationMember (idMember)
-User.belongsToMany(Organization, {
-  through: OrganizationMember,
-  foreignKey: {
-    name: 'idMember'
-  }
-});
+// // model OrganizationMember (idOrganization)
+// Organization.belongsToMany(User, {
+//   through: OrganizationMember,
+//   foreignKey: {
+//     name: 'idOrganization'
+//   }
+// });
+
+// // model OrganizationMember (idMember)
+// User.belongsToMany(Organization, {
+//   through: OrganizationMember,
+//   foreignKey: {
+//     name: 'idMember'
+//   }
+// });

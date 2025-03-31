@@ -4,6 +4,7 @@ import { Area } from '../models/Area.js';
 import { Role } from '../models/Role.js';
 import { User } from '../models/User.js';
 import { idUserRegExp } from '../helpers/utils.js';
+import { Organization } from '../models/Organization.js';
 
 export const findByPk = async (req = request, res = response, next) => {
   const model = req.baseUrl.split('/')[2];
@@ -25,7 +26,7 @@ export const findByPk = async (req = request, res = response, next) => {
         word = 'Área';
         break;
       case 'organizations':
-        found = await Role.findByPk(id);
+        found = await Organization.findByPk(id);
         msg = 'Organización no encontrada.';
         word = 'Organización';
         break;

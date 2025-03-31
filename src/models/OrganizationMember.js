@@ -32,3 +32,7 @@ export const OrganizationMember = sequelize.define(
     freezeTableName: true
   }
 );
+
+export const getOrganizationMemberModel = () => {
+  return OrganizationMember;
+};

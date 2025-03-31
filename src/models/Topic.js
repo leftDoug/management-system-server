@@ -15,7 +15,7 @@ export const Topic = sequelize.define(
       allowNull: false
     },
     month: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.INTEGER,
       allowNull: false
     }
   },
@@ -23,3 +23,7 @@ export const Topic = sequelize.define(
     timestamps: false
   }
 );
+
+export const getTopicModel = () => {
+  return Topic;
+};

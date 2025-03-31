@@ -28,17 +28,20 @@ export const TypeOfMeeting = sequelize.define(
   }
 );
 
-// model Agenda (idTypeOfMeeting)
-TypeOfMeeting.hasMany(Agenda, {
-  foreignKey: {
-    name: 'idTypeOfMeeting',
-    allowNull: false
-  }
-});
+export const getTypeOfMeetingModel = () => {
+  return TypeOfMeeting;
+};
 
-Agenda.belongsTo(TypeOfMeeting, {
-  foreignKey: {
-    name: 'idTypeOfMeeting',
-    allowNull: false
-  }
-});
+// TypeOfMeeting.hasMany(Agenda, {
+//   foreignKey: {
+//     name: 'idTypeOfMeeting',
+//     allowNull: false
+//   }
+// });
+
+// Agenda.belongsTo(TypeOfMeeting, {
+//   foreignKey: {
+//     name: 'idTypeOfMeeting',
+//     allowNull: false
+//   }
+// });

@@ -1,13 +1,26 @@
-// import { request, response } from 'express';
+import { request, response } from 'express';
 
-// import { Meeting } from '../models/Meeting.js';
-// import { TypeOfMeeting } from '../models/TypeOfMeeting.js';
-// import { Agreement } from '../models/Agreement.js';
+import { Meeting } from '../models/Meeting.js';
+import { TypeOfMeeting } from '../models/TypeOfMeeting.js';
+import { Agreement } from '../models/Agreement.js';
 // import { Worker } from '../models/Worker.js';
-// import { where } from 'sequelize';
+import { QueryTypes, Sequelize, where } from 'sequelize';
 // import { WorkerArea } from '../models/WorkerArea.js';
-// import picocolors from 'picocolors';
+import picocolors from 'picocolors';
 // import { WorkerMeeting } from '../models/WorkerMeeting.js';
+import { sequelize } from '../db/config.js';
+import { User } from '../models/User.js';
+import { Organization } from '../models/Organization.js';
+import { MeetingWorker } from '../models/MeetingWorker.js';
+import {
+  getDateFromDb,
+  getTimeFromDb,
+  setDateToDb,
+  setTimeToDb
+} from '../helpers/utils.js';
+
+// DB <-- (year)-(month+1)-(day)
+// DB --> (year)-(month+1)-(day) => (month)/(day)/(year)
 
 // const getDbTime = (dbTime, date) => {
 //   const [hours, minutes] = dbTime.split(':');
@@ -166,6 +179,45 @@
 
 //   return null;
 // };
+
+const checkConflict = (newMeeting, dbMeetings) => {
+  for (const dbMeeting of dbMeetings) {
+    const dbDate = getDateFromDb(dbMeeting.date);
+    const dbStart = getTimeFromDb(dbDate, dbMeeting.startTime);
+    const dbEnd = getTimeFromDb(dbDate, dbMeeting.endTime);
+
+    const newDate = new Date(newMeeting.date);
+    const newStart = new Date(newMeeting.startTime);
+    const newEnd = new Date(newMeeting.endTime);
+
+    newStart.setSeconds(0, 0);
+    newEnd.setSeconds(0, 0);
+
+    const timeOverlap =
+      (newStart.getTime() < dbStart.getTime() &&
+        dbStart.getTime() < newEnd.getTime()) ||
+      (newStart.getTime() < dbEnd.getTime() &&
+        dbEnd.getTime() < newEnd.getTime()) ||
+      (dbStart.getTime() < newStart.getTime() &&
+        newEnd.getTime() < dbEnd.getTime());
+
+    // si la reunion se esta actualizando
+    // if (newMeeting.id) {}
+
+    if (
+      parseInt(newMeeting.idTypeOfMeeting) === dbMeeting.idTypeOfMeeting &&
+      (newMeeting.session === dbMeeting.session) === 'Ordinaria'
+    ) {
+      return 'session';
+    }
+
+    if (timeOverlap && newMeeting.session === dbMeeting.session) {
+    } else {
+    }
+  }
+
+  return 'none';
+};
 
 // const checkConflicts = (
 //   newMeeting,
@@ -575,41 +627,202 @@
 //   }
 // };
 
-// export const getAll = async (req = request, res = response) => {
-//   try {
-//     const dbMeetings = await Meeting.findAll();
+export const getAgreements = async (req = request, res = response) => {
+  const { id } = req.params;
 
-//     return res.json({
-//       ok: true,
-//       arg: dbMeetings
-//     });
-//   } catch (err) {
-//     console.error(err);
+  try {
+    const dbMeeting = await Meeting.findByPk(id);
+    const dbAgreements = await dbMeeting.getAgreements({
+      include: [User, Meeting]
+    });
+    // const dbAgreements = await Agreement.findAll({ where: { idMeeting: id } });
 
-//     return res.status(500).json({
-//       ok: false,
-//       msg: 'Error al listar las Reuniones.'
-//     });
-//   }
-// };
+    const agreements = dbAgreements.map((agreement) => {
+      return {
+        id: agreement.id,
+        number: agreement.number,
+        content: agreement.content,
+        compilanceDate: agreement.compilanceDate,
+        completed: agreement.completed,
+        state: agreement.state,
+        responsible: {
+          id: agreement.user.id,
+          name: agreement.user.name
+        },
+        meeting: {
+          id: agreement.meeting.id,
+          name: agreement.meeting.name
+        }
+      };
+    });
 
-// export const getById = async (req = request, res = response) => {
+    return res.json({
+      ok: true,
+      arg: agreements
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener los Acuerdos.'
+    });
+  }
+};
+
+export const getAll = async (req = request, res = response) => {
+  try {
+    const dbMeetings = await Meeting.findAll();
+
+    return res.json({
+      ok: true,
+      arg: dbMeetings
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al obtener las Reuniones.'
+    });
+  }
+};
+
+export const getById = async (req = request, res = response) => {
+  const { id } = req.params;
+
+  try {
+    const dbMeeting = await Meeting.findByPk(id);
+
+    if (!dbMeeting) {
+      return res.status(404).json({
+        ok: false,
+        msg: 'Reunión no encontrada.'
+      });
+    }
+
+    dbMeeting.startTime = getTimeFromDb(dbMeeting.date, dbMeeting.startTime);
+    dbMeeting.endTime = getTimeFromDb(dbMeeting.date, dbMeeting.endTime);
+
+    return res.json({
+      ok: true,
+      arg: dbMeeting
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al buscar la Reunión.'
+    });
+  }
+};
+
+export const getInfo = async (req = request, res = response) => {
+  const { id } = req.params;
+
+  try {
+    const dbMeeting = await Meeting.findByPk(id, {
+      include: [
+        { model: TypeOfMeeting },
+        { model: User, as: 'secretary' },
+        { model: User }
+      ]
+    });
+
+    const organization = await dbMeeting.typesOfMeeting.getOrganization();
+
+    const participants = dbMeeting.users.map((worker) => {
+      return {
+        id: worker.id,
+        name: worker.name,
+        member: worker.meetingsWorkers.member,
+        status: worker.meetingsWorkers.status
+      };
+    });
+
+    const meeting = {
+      id: dbMeeting.id,
+      name: dbMeeting.name,
+      status: dbMeeting.status,
+      session: dbMeeting.session,
+      date: dbMeeting.date,
+      startTime: getTimeFromDb(dbMeeting.date, dbMeeting.startTime),
+      endTime: getTimeFromDb(dbMeeting.date, dbMeeting.endTime),
+      secretary: {
+        id: dbMeeting.idSecretary,
+        name: dbMeeting.secretary.name
+      },
+      typeOfMeeting: {
+        id: dbMeeting.idTypeOfMeeting,
+        name: dbMeeting.typesOfMeeting.name
+      },
+      organization: {
+        id: organization.id,
+        name: organization.name
+      },
+      participants
+    };
+
+    return res.json({
+      ok: true,
+      arg: meeting
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al buscar la Reunión'
+    });
+  }
+};
+
+// export const getInfo = async (req = request, res = response) => {
 //   const { id } = req.params;
 
 //   try {
-//     // FIXME: revisar que el alias en esta tabla es 'types_of_meeting'
 //     const dbMeeting = await Meeting.findByPk(id);
+//     const result = await sequelize.query(
+//       `
+//       SELECT fn_meeting_getinfo(:id, 'dbmeeting');
+//       FETCH ALL IN dbmeeting;
+//       `,
+//       {
+//         replacements: { id: parseInt(id) },
+//         type: QueryTypes.SELECT
+//       }
+//     );
 
-//     if (!dbMeeting) {
-//       return res.status(404).json({
-//         ok: false,
-//         msg: 'Reunión no encontrada.'
-//       });
-//     }
+//     const meeting = result[1];
+//     meeting.startTime = getTimeFromDb(meeting.date, meeting.startTime);
+//     meeting.endTime = getTimeFromDb(meeting.date, meeting.endTime);
+
+//     const organization = await sequelize.query(
+//       `
+//       SELECT organizations."id",
+//         organizations."name",
+//         organizations."idLeader"
+//       FROM meetings
+//         JOIN "typesOfMeetings" ON meetings."idTypeOfMeeting" = "typesOfMeetings"."id"
+//         JOIN "organizations" ON "typesOfMeetings"."idOrganization" = organizations."id"
+//       WHERE meetings."id" = :id;
+//       `,
+//       {
+//         replacements: { id },
+//         type: QueryTypes.SELECT
+//       }
+//     );
+
+//     meeting.organization = organization[0];
+//     meeting.typeOfMeeting = {
+//       id: dbMeeting.idTypeOfMeeting,
+//       name: meeting.typeOfMeeting
+//     };
 
 //     return res.json({
 //       ok: true,
-//       arg: dbMeeting
+//       arg: meeting
 //     });
 //   } catch (err) {
 //     console.error(err);
@@ -621,24 +834,451 @@
 //   }
 // };
 
-// export const getAgreements = async (req = request, res = response) => {
+// export const getParticipants = async (req = request, res = response) => {
+//   const { id } = req.params;
+
+//   try {
+//     const result = await sequelize.query(
+//       `
+//       SELECT fn_meeting_getparticipants(:id,'dbworkers');
+//       FETCH ALL IN dbworkers;
+//       `,
+//       {
+//         replacements: { id: id },
+//         type: QueryTypes.SELECT
+//       }
+//     );
+
+//     const participants = result.slice(1);
+
+//     return res.json({
+//       ok: true,
+//       arg: participants
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     return res.status(500).json({
+//       ok: true,
+//       msg: 'Error al obtener los participantes'
+//     });
+//   }
+// };
+
+// export const getAbsents = async (req = request, res = response) => {
+//   const { id } = req.params;
+
+//   try {
+//     const result = await sequelize.query(
+//       `
+//       SELECT fn_meeting_getabsents(:id,'dbworkers');
+//       FETCH ALL IN dbworkers;
+//       `,
+//       {
+//         replacements: { id: id },
+//         type: QueryTypes.SELECT
+//       }
+//     );
+
+//     const absents = result.slice(1);
+
+//     return res.json({
+//       ok: true,
+//       arg: absents
+//     });
+//   } catch (error) {
+//     console.log(error);
+
+//     return res.status(500).json({
+//       ok: true,
+//       msg: 'Error al obtener los ausentes'
+//     });
+//   }
+// };
+
+// export const getOrganization = async (req = request, res = response) => {
 //   const { id } = req.params;
 
 //   try {
 //     const dbMeeting = await Meeting.findByPk(id);
-//     const dbAgreements = await dbMeeting.getAgreements();
-//     // const dbAgreements = await Agreement.findAll({ where: { idMeeting: id } });
+//     const result = await sequelize.query(
+//       `
+//       SELECT organizations."name"
+//       FROM meetings
+//         JOIN "typesOfMeetings" ON meetings."idTypeOfMeeting" = "typesOfMeetings"."id"
+//         JOIN "organizations" ON "typesOfMeetings"."idOrganization" = organizations."id"
+//       WHERE meetings."id" = :id;
+//       `,
+//       {
+//         replacements: { id },
+//         type: QueryTypes.SELECT
+//       }
+//     );
 
-//     res.json({
+//     return res.json({
 //       ok: true,
-//       arg: dbAgreements
+//       arg: dbMeeting
 //     });
 //   } catch (error) {
-//     console.error(error);
+//     console.log(error);
 
-//     res.status(500).json({
+//     return res.status(500).json({
 //       ok: false,
-//       msg: 'Error al obtener los Acuerdos.'
+//       msg: 'Error al obtener la Organización'
 //     });
 //   }
 // };
+
+// TODO todas las acciones deben ser asi
+export const create = async (req = request, res = response) => {
+  const {
+    name,
+    session,
+    date,
+    startTime,
+    endTime,
+    idTypeOfMeeting,
+    idSecretary,
+    members,
+    guests
+  } = req.body;
+
+  const newMeeting = {
+    date,
+    startTime,
+    endTime,
+    session,
+    idTypeOfMeeting
+  };
+
+  const newDate = setDateToDb(date);
+  const newStart = setTimeToDb(startTime);
+  const newEnd = setTimeToDb(endTime);
+
+  const workers = members
+    .map((idWorker) => {
+      return { idWorker };
+    })
+    .concat(
+      guests.map((idWorker) => {
+        return { idWorker, member: false };
+      })
+    );
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const dbMeetings = await Meeting.findAll({
+      where: { date: newDate },
+      transaction
+    });
+
+    if (dbMeetings) {
+      // FIXME revisar x k no esta pinchando esto
+      const conflict = checkConflict(newMeeting, dbMeetings);
+
+      switch (conflict) {
+        case 'session':
+          return res.status(400).json({
+            ok: false,
+            msg: 'Ya existe una Reunión de este Tipo que coincide en la sesión Ordinaria el mismo día.'
+          });
+        case 'type':
+          return res.status(400).json({
+            ok: false,
+            msg: 'Ya existe una Reunión de este Tipo que coincide con esta en el horario.'
+          });
+        case 'secretary':
+          return res.status(400).json({
+            ok: false,
+            msg: 'El secretario de acta debe asistir a otra reunión en este horario.'
+          });
+        case 'meeting':
+          return res.status(400).json({
+            ok: false,
+            msg: 'Ya existe una Reunión que coincide con esta en nombre, sesión, Tipo y fecha.'
+          });
+        default:
+          break;
+      }
+    }
+
+    const dbMeeting = await Meeting.create(
+      {
+        name,
+        session,
+        date: newDate,
+        startTime: newStart,
+        endTime: newEnd,
+        idTypeOfMeeting,
+        idSecretary
+      },
+      { transaction }
+    );
+
+    await MeetingWorker.bulkCreate(
+      workers.map((worker) => {
+        return {
+          idMeeting: dbMeeting.id,
+          idWorker: worker.idWorker,
+          member: worker.member
+        };
+      }),
+      { transaction }
+    );
+
+    await transaction.commit();
+
+    return res.status(201).json({
+      ok: true,
+      msg: 'Reunión creada'
+    });
+  } catch (err) {
+    console.error(err);
+
+    await transaction.rollback();
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al crear la Reunión'
+    });
+  }
+};
+
+export const update = async (req = request, res = response) => {
+  const { id } = req.params;
+  const {
+    name,
+    session,
+    date,
+    startTime,
+    endTime,
+    idTypeOfMeeting,
+    idSecretary,
+    members,
+    guests
+  } = req.body;
+
+  const newMeeting = {
+    date,
+    startTime,
+    endTime,
+    session,
+    idTypeOfMeeting
+  };
+
+  const newDate = setDateToDb(date);
+  const newStart = setTimeToDb(startTime);
+  const newEnd = setTimeToDb(endTime);
+
+  const workers = members
+    .map((idWorker) => {
+      return { idWorker };
+    })
+    .concat(
+      guests.map((idWorker) => {
+        return { idWorker, member: false };
+      })
+    );
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    const dbMeeting = await Meeting.findByPk(id, { transaction });
+
+    const dbMeetings = await Meeting.findAll({
+      where: { date: newDate },
+      transaction
+    });
+
+    const dbWorkers = await MeetingWorker.findAll({
+      where: { idMeeting: parseInt(id) },
+      transaction
+    });
+
+    if (dbMeetings.length > 0) {
+      // FIXME revisar x k no pincha
+      const conflict = checkConflict(newMeeting, dbMeetings);
+
+      switch (conflict) {
+        case 'session':
+          return res.status(400).json({
+            ok: false,
+            msg: 'Ya existe una Reunión de este Tipo que coincide en la sesión Ordinaria el mismo día.'
+          });
+        default:
+          break;
+      }
+    }
+
+    await dbMeeting.update(
+      {
+        name,
+        session,
+        date: newDate,
+        startTime: newStart,
+        endTime: newEnd,
+        idSecretary
+      },
+      { transaction }
+    );
+
+    await MeetingWorker.destroy({
+      where: {
+        idMeeting: id,
+        idWorker: dbWorkers
+          .filter(
+            (worker) =>
+              !workers.some((worker2) => worker2.idWorker === worker.idWorker)
+          )
+          .map((worker3) => worker3.idWorker)
+      },
+      transaction
+    });
+
+    await MeetingWorker.bulkCreate(
+      workers
+        .filter(
+          (worker) =>
+            !dbWorkers.some((worker2) => worker2.idWorker === worker.idWorker)
+        )
+        .map((worker3) => {
+          return {
+            idMeeting: id,
+            idWorker: worker3.idWorker,
+            member: worker3.member
+          };
+        }),
+      { transaction }
+    );
+
+    await transaction.commit();
+
+    return res.json({
+      ok: true,
+      msg: 'Reunion actualizada'
+    });
+  } catch (err) {
+    console.error(err);
+
+    transaction.rollback();
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al actualizar la Reunión'
+    });
+  }
+};
+
+export const setAttendance = async (req = request, res = response) => {
+  const { id } = req.params;
+  const { attendants } = req.body;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    await MeetingWorker.update(
+      { status: 'presente' },
+      {
+        where: {
+          idMeeting: parseInt(id),
+          idWorker: { [Sequelize.Op.in]: attendants },
+          status: { [Sequelize.Op.ne]: 'presente' }
+        },
+        transaction
+      }
+    );
+
+    await MeetingWorker.update(
+      { status: 'ausente' },
+      {
+        where: {
+          idMeeting: parseInt(id),
+          idWorker: { [Sequelize.Op.notIn]: attendants },
+          status: { [Sequelize.Op.ne]: 'ausente' }
+        },
+        transaction
+      }
+    );
+
+    await transaction.commit();
+
+    return res.json({
+      ok: true,
+      msg: 'Asistencia registrada'
+    });
+  } catch (err) {
+    console.log(err);
+
+    transaction.rollback();
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al registrar la asistencia'
+    });
+  }
+};
+
+export const setOpen = async (req = request, res = response) => {
+  const { id } = req.params;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    await Meeting.update(
+      { status: 'en proceso' },
+      {
+        where: { id },
+        transaction
+      }
+    );
+
+    await transaction.commit();
+
+    return res.json({
+      ok: true,
+      msg: 'La Reunión ahora está abierta.'
+    });
+  } catch (error) {
+    console.log(error);
+
+    transaction.rollback();
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al abrir la Reunión'
+    });
+  }
+};
+
+export const setClose = async (req = request, res = response) => {
+  const { id } = req.params;
+
+  const transaction = await sequelize.transaction();
+
+  try {
+    await Meeting.update(
+      { status: 'completada' },
+      {
+        where: { id },
+        transaction
+      }
+    );
+
+    await transaction.commit();
+
+    return res.json({
+      ok: true,
+      msg: 'La Reunión ahora está cerrada.'
+    });
+  } catch (error) {
+    console.log(error);
+
+    transaction.rollback();
+
+    return res.status(500).json({
+      ok: false,
+      msg: 'Error al cerrar la Reunión'
+    });
+  }
+};

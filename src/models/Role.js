@@ -20,3 +20,7 @@ export const Role = sequelize.define(
     timestamps: false
   }
 );
+
+export const getRoleModel = () => {
+  return Role;
+};

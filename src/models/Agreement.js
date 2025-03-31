@@ -18,6 +18,7 @@ export const Agreement = sequelize.define(
     },
     number: {
       type: DataTypes.INTEGER,
+      autoIncrement: true,
       allowNull: false
     },
     content: {
@@ -44,32 +45,36 @@ export const Agreement = sequelize.define(
   }
 );
 
-// model Response (idAgreement)
-Agreement.hasMany(Response, {
-  foreignKey: {
-    name: 'idAgreement',
-    allowNull: false
-  }
-});
+export const getAgreementModel = () => {
+  return Agreement;
+};
 
-Response.belongsTo(Agreement, {
-  foreignKey: {
-    name: 'idAgreement',
-    allowNull: false
-  }
-});
+// // model Response (idAgreement)
+// Agreement.hasMany(Response, {
+//   foreignKey: {
+//     name: 'idAgreement',
+//     allowNull: false
+//   }
+// });
 
-// idResponsible
-User.hasMany(Agreement, {
-  foreignKey: {
-    name: 'idResponsible',
-    allowNull: false
-  }
-});
+// Response.belongsTo(Agreement, {
+//   foreignKey: {
+//     name: 'idAgreement',
+//     allowNull: false
+//   }
+// });
 
-Agreement.belongsTo(User, {
-  foreignKey: {
-    name: 'idResponsible',
-    allowNull: false
-  }
-});
+// // idResponsible
+// User.hasMany(Agreement, {
+//   foreignKey: {
+//     name: 'idResponsible',
+//     allowNull: false
+//   }
+// });
+
+// Agreement.belongsTo(User, {
+//   foreignKey: {
+//     name: 'idResponsible',
+//     allowNull: false
+//   }
+// });

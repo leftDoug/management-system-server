@@ -32,6 +32,11 @@ export const Meeting = sequelize.define(
     },
     endTime: {
       type: DataTypes.TIME
+    },
+    status: {
+      type: DataTypes.ENUM('pendiente', 'en proceso', 'completada'),
+      defaultValue: 'pendiente',
+      allowNull: false
     }
   },
   {
@@ -39,77 +44,81 @@ export const Meeting = sequelize.define(
   }
 );
 
-// model Agreement (idMeeting)
-Meeting.hasMany(Agreement, {
-  foreignKey: {
-    name: 'idMeeting',
-    allowNull: false
-  }
-});
+export const getMeetingModel = () => {
+  return Meeting;
+};
 
-Agreement.belongsTo(Meeting, {
-  foreignKey: {
-    name: 'idMeeting',
-    allowNull: false
-  }
-});
+// // model Agreement (idMeeting)
+// Meeting.hasMany(Agreement, {
+//   foreignKey: {
+//     name: 'idMeeting',
+//     allowNull: false
+//   }
+// });
 
-// idSecretary
-User.hasMany(Meeting, {
-  foreignKey: {
-    name: 'idSecretary'
-  }
-});
+// Agreement.belongsTo(Meeting, {
+//   foreignKey: {
+//     name: 'idMeeting',
+//     allowNull: false
+//   }
+// });
 
-Meeting.belongsTo(User, {
-  foreignKey: {
-    name: 'idSecretary'
-  }
-});
+// // idSecretary
+// User.hasMany(Meeting, {
+//   foreignKey: {
+//     name: 'idSecretary'
+//   }
+// });
 
-// idTypeOfMeeting
-TypeOfMeeting.hasMany(Meeting, {
-  foreignKey: {
-    name: 'idTypeOfMeeting',
-    allowNull: false
-  }
-});
+// Meeting.belongsTo(User, {
+//   foreignKey: {
+//     name: 'idSecretary'
+//   }
+// });
 
-Meeting.belongsTo(TypeOfMeeting, {
-  foreignKey: {
-    name: 'idTypeOfMeeting',
-    allowNull: false
-  }
-});
+// // idTypeOfMeeting
+// TypeOfMeeting.hasMany(Meeting, {
+//   foreignKey: {
+//     name: 'idTypeOfMeeting',
+//     allowNull: false
+//   }
+// });
 
-// model MeetingGuest (idMeeting)
-Meeting.belongsToMany(User, {
-  through: MeetingGuest,
-  foreignKey: {
-    name: 'idMeeting'
-  }
-});
+// Meeting.belongsTo(TypeOfMeeting, {
+//   foreignKey: {
+//     name: 'idTypeOfMeeting',
+//     allowNull: false
+//   }
+// });
 
-// model MeetingGuest (idGuest)
-User.belongsToMany(Meeting, {
-  through: MeetingGuest,
-  foreignKey: {
-    name: 'idGuest'
-  }
-});
+// // model MeetingGuest (idMeeting)
+// Meeting.belongsToMany(User, {
+//   through: MeetingGuest,
+//   foreignKey: {
+//     name: 'idMeeting'
+//   }
+// });
 
-// model MeetingAbsence (idMeeting)
-Meeting.belongsToMany(User, {
-  through: MeetingAbsence,
-  foreignKey: {
-    name: 'idMeeting'
-  }
-});
+// // model MeetingGuest (idGuest)
+// User.belongsToMany(Meeting, {
+//   through: MeetingGuest,
+//   foreignKey: {
+//     name: 'idGuest'
+//   }
+// });
 
-// model MeetingAbsence (idAbsent)
-User.belongsToMany(Meeting, {
-  through: MeetingAbsence,
-  foreignKey: {
-    name: 'idAbsent'
-  }
-});
+// // model MeetingAbsence (idMeeting)
+// Meeting.belongsToMany(User, {
+//   through: MeetingAbsence,
+//   foreignKey: {
+//     name: 'idMeeting'
+//   }
+// });
+
+// // model MeetingAbsence (idAbsent)
+// User.belongsToMany(Meeting, {
+//   through: MeetingAbsence,
+//   foreignKey: {
+//     name: 'idAbsent'
+//   }
+// });

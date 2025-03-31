@@ -13,7 +13,7 @@ export const Agenda = sequelize.define(
       autoIncrement: true
     },
     year: {
-      type: DataTypes.DATEONLY,
+      type: DataTypes.INTEGER,
       allowNull: false
     },
     state: {
@@ -27,17 +27,21 @@ export const Agenda = sequelize.define(
   }
 );
 
-// model Topic (idAgenda)
-Agenda.hasMany(Topic, {
-  foreignKey: {
-    name: 'idAgenda',
-    allowNull: false
-  }
-});
+export const getAgendaModel = () => {
+  return Agenda;
+};
 
-Topic.belongsTo(Agenda, {
-  foreignKey: {
-    name: 'idAgenda',
-    allowNull: false
-  }
-});
+// // model Topic (idAgenda)
+// Agenda.hasMany(Topic, {
+//   foreignKey: {
+//     name: 'idAgenda',
+//     allowNull: false
+//   }
+// });
+
+// Topic.belongsTo(Agenda, {
+//   foreignKey: {
+//     name: 'idAgenda',
+//     allowNull: false
+//   }
+// });

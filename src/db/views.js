@@ -1,8 +1,8 @@
 import { QueryTypes } from 'sequelize';
-import { sequelize } from './config';
+import { sequelize } from './config.js';
 import picocolors from 'picocolors';
 
-export const view_workers = `
+const viewWorkers = `
   CREATE OR REPLACE VIEW  public.view_workers
     AS
     SELECT users."id", users."name"
@@ -12,7 +12,7 @@ export const view_workers = `
     ALTER TABLE public.view_workers
       OWNER TO postgres;
   `;
-export const view_users = `
+const viewUsers = `
   CREATE OR REPLACE VIEW public.view_users
     AS
     SELECT users."id",
@@ -28,6 +28,20 @@ export const view_users = `
     ORDER BY users."username";
 
     ALTER TABLE public.view_users
+        OWNER TO postgres;
+  `;
+const viewOrganizations = `
+  CREATE OR REPLACE VIEW public.view_organizations
+    AS
+    SELECT organizations."id",
+      organizations."name",
+      users."name" AS leader
+    FROM organizations
+      JOIN users ON organizations."idLeader" = users."id"
+    WHERE organizations."state" = 'true'
+    ORDER BY organizations."name";
+
+    ALTER TABLE public.view_organizations
         OWNER TO postgres;
   `;
 
@@ -46,7 +60,7 @@ export const createViews = async () => {
       }
     );
 
-    !viewWorkersExists.exists && (await sequelize.query(view_workers));
+    !viewWorkersExists.exists && (await sequelize.query(viewWorkers));
 
     const [viewUsersExists] = await sequelize.query(
       `
@@ -61,7 +75,23 @@ export const createViews = async () => {
       }
     );
 
-    !viewUsersExists.exists && (await sequelize.query(view_users));
+    !viewUsersExists.exists && (await sequelize.query(viewUsers));
+
+    const [viewOrganizationsExists] = await sequelize.query(
+      `
+      SELECT EXISTS (
+        SELECT 1
+        FROM information_schema.views
+        WHERE table_name = 'view_organizations'
+      )
+      `,
+      {
+        type: QueryTypes.SELECT
+      }
+    );
+
+    !viewOrganizationsExists.exists &&
+      (await sequelize.query(viewOrganizations));
   } catch (error) {
     console.log(picocolors.red(picocolors.bold('ERROR: ')), error);
   }
